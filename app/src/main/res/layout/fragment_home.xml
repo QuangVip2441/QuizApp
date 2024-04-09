@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorwhitegray"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Views.HomeFragment">
 
@@ -19,6 +20,7 @@
                 android:id="@+id/imageBanner"
                 android:layout_width="match_parent"
                 android:layout_height="144dp"
+                android:scaleType="centerCrop"
                 android:background="@drawable/bg_mainfragment"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -27,16 +29,17 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/imageAvatar"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_marginEnd="24dp"
                 android:background="@color/colorGray"
+                app:shapeAppearanceOverlay="@style/circular"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_main"
                 app:layout_constraintBottom_toBottomOf="@id/imageBanner"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/imageBanner"
-                app:shapeAppearanceOverlay="@style/styleShapeCircular" />
+               />
 
             <TextView
                 android:id="@+id/txtNameApp"
@@ -54,18 +57,18 @@
 
 
             <LinearLayout
+                android:id="@+id/linearintroduce"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="36dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="15dp"
                 android:layout_marginEnd="36dp"
                 android:background="@drawable/background_circular"
                 android:orientation="horizontal"
                 android:padding="12dp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txtNameApp">
+                app:layout_constraintTop_toBottomOf="@id/txtNameApp">
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -79,20 +82,60 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
                         android:text="Giới thiệu:"
-                        android:textStyle="bold"
-                        android:textSize="23sp" />
+                        android:textSize="23sp"
+                        android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/hiddenContent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Ứng dụng Sát hạch này là một công cụ hữu ích giúp người dùng ôn tập kiến ​​thức, làm bài tập và thi thử các bài kiểm tra về các khái niệm và kỹ năng trong lĩnh vực tin học."
                         android:textSize="17sp"
+                        android:visibility="gone"/>
+
+                    <ImageButton
+                        android:id="@+id/btnToggle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/white"
+                        android:src="@drawable/ic_hide"
                         />
                 </LinearLayout>
-
             </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:gravity="center_vertical"
+                android:layout_marginRight="20dp"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/background_circular"
+                android:layout_marginTop="15dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearintroduce">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nhập vào mục bạn muốn tìm"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:letterSpacing="0.04"
+                    android:layout_marginLeft="20dp"/>
+                
+                <ImageView
+                    android:id="@+id/imgSearch"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="20dp"
+                    android:src="@drawable/ic_search"/>
+            </RelativeLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -143,8 +186,6 @@
                         />
                 </LinearLayout>
 
-
-
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -177,12 +218,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="People"
+                android:text="Tùy chọn"
                 android:textStyle="bold"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="120dp"
+                android:layout_height="150dp"
                 android:layout_marginTop="6dp"
                 android:orientation="horizontal">
 
@@ -194,33 +235,23 @@
                     android:gravity="center"
                     android:orientation="vertical"
                     android:background="@drawable/background_circular"
-                    android:backgroundTint="@color/colorGray">
-                    <Button
-                        android:id="@+id/buttonLecturer"
+                    android:backgroundTint="@color/colorwhitegray">
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/imgHistoryTest"
+                        android:layout_width="110dp"
+                        android:layout_height="110dp"
+                        android:src="@drawable/icon_historytest"
+                        android:layout_gravity="center_horizontal"
+                        />
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:drawableTop="@drawable/ic_people_36"
-                        android:background="@android:color/transparent"
-                        android:text="Falculties"
-                        android:textColor="@color/black"/>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="6dp"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:background="@drawable/background_circular"
-                    android:backgroundTint="@color/colorGray">
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:drawableTop="@drawable/ic_person_36"
-                        android:background="@android:color/transparent"
-                        android:text="Advisors"
-                        android:textColor="@color/black"/>
+                        android:text="Lịch Sử Thi"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:layout_gravity="center_horizontal"
+                        />
                 </LinearLayout>
 
                 <LinearLayout
@@ -230,38 +261,25 @@
                     android:gravity="center"
                     android:orientation="vertical"
                     android:background="@drawable/background_circular"
-                    android:backgroundTint="@color/colorGray">
-                    <Button
+                    android:backgroundTint="@color/colorwhitegray">
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/imgOther"
+                        android:layout_width="110dp"
+                        android:layout_height="110dp"
+                        android:src="@drawable/icon_otherselect"
+                        android:layout_gravity="center_horizontal"
+                        />
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:drawableTop="@drawable/ic_student_36"
-                        android:background="@android:color/transparent"
-                        android:text="Dean's list"
-                        android:textColor="@color/black"/>
+                        android:text="Tùy Chọn Khác"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:layout_gravity="center_horizontal"
+                        />
                 </LinearLayout>
-
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:layout_marginStart="6dp"
-                android:orientation="vertical"
-                android:background="@drawable/background_circular"
-                android:backgroundTint="@color/colorPink">
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawableTop="@drawable/ic_scholarship_36"
-                    android:background="@android:color/transparent"
-                    android:text="Scholarship"/>
             </LinearLayout>
         </LinearLayout>
-
     </LinearLayout>
-
-
 </androidx.core.widget.NestedScrollView>
