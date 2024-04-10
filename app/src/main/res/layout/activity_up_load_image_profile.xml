@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Views.UpLoadImageProfileActivity"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center_horizontal"
+    android:background="@color/colorblue">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:id="@+id/profileImgUpload"
+        android:layout_marginTop="30dp"
+        android:background="@color/white"
+        android:scaleType="centerCrop"
+        app:shapeAppearanceOverlay="@style/circular"
+        app:strokeWidth="5dp"
+        app:strokeColor="@color/white"
+        android:padding="5dp"
+        android:src="@drawable/baseline_person"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        android:layout_margin="16dp">
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textStyle="bold"
+            android:text="Quay lại"
+            android:textColor="#ffffff"
+            android:backgroundTint="#255FC3"
+            android:layout_marginRight="6dp"
+            android:id="@+id/btnClose"/>
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textStyle="bold"
+            android:text="Lưu"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/colorbrown"
+            android:layout_marginRight="6dp"
+            android:id="@+id/btnSave"/>
+    </LinearLayout>
+
+</LinearLayout>
