@@ -4,6 +4,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="colorGray">#ACA7A7</color>
     <color name="colorGreen">#2AEFE0</color>
+<!--    background color-->
     <color name="colorwhitegray">#E8EAF4</color>
     <color name="colorbluegray">#B8C5D8</color>
     <color name="colordeepBlue">#1528E9</color>
@@ -12,4 +13,8 @@
     <color name="colorblue">#619CBA</color>
     <color name="colorpurple">#4F63D8</color>
     <color name="colorbrown">#A45F61</color>
+
+
+    <color name="primaryTextColor">#2661FA</color>
+    <color name="purple">#8692f7</color>
 </resources>
