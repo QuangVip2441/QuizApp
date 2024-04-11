@@ -9,9 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import com.example.quizapp.Models.ModuleModel;
 import com.example.quizapp.R;
+import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,7 +21,7 @@ import java.util.List;
 
 public class ModuleFragment extends Fragment {
 
-    private Button buttonQuizModule;
+    private ShapeableImageView buttonQuizModule;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

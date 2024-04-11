@@ -71,12 +71,11 @@ public class ResultFragment extends Fragment {
         btnreTakeQuiz.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                HomeFragment homeFragment = new HomeFragment();
-                fragmentTransaction.replace(R.id.FragmentResult, homeFragment);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
+                ModuleFragment moduleFragment = new ModuleFragment();
+                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+                transaction.replace(R.id.FragmentResult, moduleFragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
             }
         });
     }
