@@ -1,8 +1,10 @@
 package com.example.quizapp.Views;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,11 +13,13 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.quizapp.R;
+import com.google.android.material.imageview.ShapeableImageView;
 
 public class HomeFragment extends Fragment {
 
     private TextView hiddenContent, txtNameApp;
     private ImageButton btnToggle;
+    private ShapeableImageView imgTestModule;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -24,11 +28,20 @@ public class HomeFragment extends Fragment {
         btnToggle = view.findViewById(R.id.btnToggle);
         hiddenContent = view.findViewById(R.id.hiddenContent);
         txtNameApp = view.findViewById(R.id.txtNameApp);
+        imgTestModule = view.findViewById(R.id.imgTestModule);
 
         btnToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 toggleContent();
+            }
+        });
+
+        imgTestModule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), ModuleActivity.class);
+                startActivity(intent);
             }
         });
         return view;

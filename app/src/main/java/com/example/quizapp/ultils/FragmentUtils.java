@@ -20,4 +20,10 @@ public class FragmentUtils {
         transaction.replace(R.id.fragmentContainerView, fragment);
         transaction.commit();
     }
+
+    public static void removeFragment(FragmentManager manager,Fragment fragment){
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.remove(fragment);
+        transaction.commit();
+    }
 }

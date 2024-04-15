@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quizapp.Models.ChoiceModel;
+import com.example.quizapp.Models.QuestionModel;
 import com.example.quizapp.R;
 
 
@@ -19,6 +20,7 @@ public class McqRvAdapter extends RecyclerView.Adapter<McqRvAdapter.ViewHolder> 
 
     private final int RESOURCE_ID;
     private ArrayList<ChoiceModel> mChoices;
+    private ArrayList<QuestionModel> mQuestions;
     private int mSelectedItem = -1;
 
     public int getPosition() {
@@ -35,6 +37,8 @@ public class McqRvAdapter extends RecyclerView.Adapter<McqRvAdapter.ViewHolder> 
         this.RESOURCE_ID = RESOURCE_ID;
         this.mChoices = mChoices;
     }
+
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

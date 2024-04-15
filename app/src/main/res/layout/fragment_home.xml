@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorwhitegray"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".Views.HomeFragment">
+    tools:context=".Views.HomeFragment"
+    android:id="@+id/fragment_container">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -282,4 +283,4 @@
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+</FrameLayout>

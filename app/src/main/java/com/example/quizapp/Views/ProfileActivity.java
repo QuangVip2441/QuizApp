@@ -49,7 +49,6 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
         txtChangePassword = findViewById(R.id.txtChangePassword);
         txtMSSV = findViewById(R.id.txtMSSV);
         txtEmail = findViewById(R.id.txtEmail);

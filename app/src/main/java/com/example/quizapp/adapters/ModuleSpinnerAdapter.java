@@ -18,6 +18,7 @@ public class ModuleSpinnerAdapter extends ArrayAdapter<ModuleModel> {
     private Context mContext;
     private ArrayList<ModuleModel> mModules;
 
+
     public ModuleSpinnerAdapter(@NonNull Context context, int resource, @NonNull ArrayList<ModuleModel> objects) {
         super(context, resource, objects);
         this.mContext = context;
