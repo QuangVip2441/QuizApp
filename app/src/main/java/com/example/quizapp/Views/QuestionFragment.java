@@ -35,7 +35,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
+
 import java.util.concurrent.TimeUnit;
 
 public class QuestionFragment extends Fragment {
@@ -55,10 +55,12 @@ public class QuestionFragment extends Fragment {
     private FirebaseFirestore mFirestore;
     private CollectionReference mRefCollectionQuestions;
     private int Test_timer = 600;
+
     private int correctAns = 0;
     private int numberOfQuestionsToSelect = 10;
     public QuestionFragment() {
     }
+
 
 
     public QuestionFragment(int mOrder, String mSelectedModuleID) {
@@ -170,7 +172,11 @@ public class QuestionFragment extends Fragment {
 
                             if (task.isSuccessful()) {
                                 mQuestions.clear();
+
                                 ArrayList<QuestionModel> listquestion = new ArrayList<>();
+
+
+
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     Map<String, Object> data = document.getData();
                                     ArrayList<ChoiceModel> choices = new ArrayList<>();
@@ -191,6 +197,7 @@ public class QuestionFragment extends Fragment {
                                             (String) data.get(Constant.Database.Question.CORRECT)
                                     );
 
+
                                         listquestion.add(question);
 
                                 }
@@ -205,10 +212,12 @@ public class QuestionFragment extends Fragment {
                                     for (int i = 0; i < numberOfQuestionsToSelect ; i++){
                                         int randomIndex = listRandom.get(i);
                                         mQuestions.add(listquestion.get(randomIndex));
+
                                     }
                                 }
 
                                 if (mQuestions != null) {
+
                                     showQuestion(view);
                                     totalQuestion.setText("/" + mQuestions.size());
                                 }
@@ -234,17 +243,42 @@ public class QuestionFragment extends Fragment {
     }
 
 
+
+    private void startQuizTimer(int maxTimeInseconds){
+        countDownTimer = new CountDownTimer(maxTimeInseconds * 1000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                long getMinute = TimeUnit.SECONDS.toMinutes(millisUntilFinished / 1000);
+                long getSecond = TimeUnit.SECONDS.toSeconds(millisUntilFinished / 1000) % 60;
+
+                String generatetime = String.format(Locale.getDefault(),"%02d:%02d", getMinute, getSecond);
+
+
+                QuizTimer.setText(generatetime);
+            }
+
+            @Override
+            public void onFinish() {
+                // finish Quiz when time is finished
+                FinishQuiz();
+                // gán thời gian kết thúc lên firebase
+                Map<String, Object> candidate = new HashMap<>();
+                candidate.put(Constant.Database.Candidate.END_TIMER, ServerValue.TIMESTAMP);
+            }
+        };
+
+        // Start Timer
+        countDownTimer.start();
+    }
+
     private void FinishQuiz(){
-        // Gỡ bỏ HeaderFragment
-        Fragment fragment = getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_header);
-        FragmentUtils.removeFragment(getActivity().getSupportFragmentManager(), fragment);
+        // back to fragment
+        Bundle bundle = new Bundle();
+        bundle.putInt("correctAns", correctAns);
 
-        // Gỡ bỏ Fragment Question
-        Fragment fragmentquestion = getActivity().getSupportFragmentManager().findFragmentById(R.id.fragmentQuestion);
-        FragmentUtils.removeFragment(getActivity().getSupportFragmentManager(), fragmentquestion);
-
-        // Thêm ResultFragment vào activity
         ResultFragment resultFragment = new ResultFragment();
+        resultFragment.setArguments(bundle);
+
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragmentQuestion, resultFragment)

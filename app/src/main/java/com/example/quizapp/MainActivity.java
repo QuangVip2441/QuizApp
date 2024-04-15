@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment;
 import android.os.Bundle;
 
 import com.example.quizapp.Models.QuestionModel;
+import com.example.quizapp.Views.AddModuleFragment;
+import com.example.quizapp.Views.AddQuestionFragment;
 import com.example.quizapp.Views.HomeFragment;
 import com.example.quizapp.ultils.FragmentUtils;
 

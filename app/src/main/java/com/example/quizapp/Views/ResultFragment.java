@@ -52,11 +52,7 @@ public class ResultFragment extends Fragment {
         btnreTakeQuiz = view.findViewById(R.id.btnreTakeQuiz);
 
 
-        Bundle bundle = getArguments();
-        if (bundle != null) {
-//            correctAns = bundle.getInt("correctAns", 0);
-            correctAns = 10;
-        }
+
 
         txttotalScore.setText("/" + 10);
         txtScore.setText(correctAns  + "");
@@ -72,11 +68,13 @@ public class ResultFragment extends Fragment {
         btnreTakeQuiz.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                ModuleFragment moduleFragment = new ModuleFragment();
-//                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-//                transaction.replace(R.id.FragmentResult, moduleFragment);
-//                transaction.addToBackStack(null);
-//                transaction.commit();
+
+                ModuleFragment moduleFragment = new ModuleFragment();
+                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+                transaction.replace(R.id.FragmentResult, moduleFragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
+
             }
         });
     }
