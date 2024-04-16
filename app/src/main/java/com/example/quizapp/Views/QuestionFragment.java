@@ -107,7 +107,7 @@ public class QuestionFragment extends Fragment {
             correctAns = bundle.getInt("correctAns", 0);
         }
 
-        currentQuestion.setText("Question " + (mOrder + 1));
+        //currentQuestion.setText("Question " + (mOrder + 1));
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -128,7 +128,7 @@ public class QuestionFragment extends Fragment {
                     if (mOrder < mQuestions.size() - 1) {
                         QuestionFragment nextFragment = new QuestionFragment(mQuestions, mOrder + 1, mSelectedModuleID);
                         nextFragment.setArguments(bundle);
-                        FragmentUtils.replaceFragment(
+                        FragmentUtils.replaceFragmentQuestion(
                                 getActivity().getSupportFragmentManager(),
                                 nextFragment,
                                 true);
@@ -198,28 +198,29 @@ public class QuestionFragment extends Fragment {
                                     );
 
 
-                                        listquestion.add(question);
+                                        //listquestion.add(question);
+                                        mQuestions.add(question);
 
                                 }
 
-                                if (listquestion != null){
-                                    ArrayList<Integer> listRandom = new ArrayList<>();
-                                    for (int i = 0; i < listquestion.size(); i++)
-                                    {
-                                        listRandom.add(i);
-                                    }
-                                    Collections.shuffle(listRandom);
-                                    for (int i = 0; i < numberOfQuestionsToSelect ; i++){
-                                        int randomIndex = listRandom.get(i);
-                                        mQuestions.add(listquestion.get(randomIndex));
-
-                                    }
-                                }
+//                                if (listquestion != null){
+//                                    ArrayList<Integer> listRandom = new ArrayList<>();
+//                                    for (int i = 0; i < listquestion.size(); i++)
+//                                    {
+//                                        listRandom.add(i);
+//                                    }
+//                                    Collections.shuffle(listRandom);
+//                                    for (int i = 0; i < numberOfQuestionsToSelect ; i++){
+//                                        int randomIndex = listRandom.get(i);
+//                                        mQuestions.add(listquestion.get(randomIndex));
+//
+//                                    }
+//                                }
 
                                 if (mQuestions != null) {
 
                                     showQuestion(view);
-                                    totalQuestion.setText("/" + mQuestions.size());
+//                                    totalQuestion.setText("/" + mQuestions.size());
                                 }
                             }
                         }
@@ -242,34 +243,6 @@ public class QuestionFragment extends Fragment {
         }
     }
 
-
-
-    private void startQuizTimer(int maxTimeInseconds){
-        countDownTimer = new CountDownTimer(maxTimeInseconds * 1000, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                long getMinute = TimeUnit.SECONDS.toMinutes(millisUntilFinished / 1000);
-                long getSecond = TimeUnit.SECONDS.toSeconds(millisUntilFinished / 1000) % 60;
-
-                String generatetime = String.format(Locale.getDefault(),"%02d:%02d", getMinute, getSecond);
-
-
-                QuizTimer.setText(generatetime);
-            }
-
-            @Override
-            public void onFinish() {
-                // finish Quiz when time is finished
-                FinishQuiz();
-                // gán thời gian kết thúc lên firebase
-                Map<String, Object> candidate = new HashMap<>();
-                candidate.put(Constant.Database.Candidate.END_TIMER, ServerValue.TIMESTAMP);
-            }
-        };
-
-        // Start Timer
-        countDownTimer.start();
-    }
 
     private void FinishQuiz(){
         // back to fragment

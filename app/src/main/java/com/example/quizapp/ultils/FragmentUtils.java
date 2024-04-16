@@ -21,6 +21,16 @@ public class FragmentUtils {
         transaction.commit();
     }
 
+    public static void replaceFragmentQuestion(FragmentManager manager,
+                                       Fragment fragment,
+                                       boolean addToBackStack) {
+        FragmentTransaction transaction = manager.beginTransaction();
+        if (addToBackStack) {
+            transaction.addToBackStack(null);
+        }
+        transaction.replace(R.id.fragment_question, fragment);
+        transaction.commit();
+    }
     public static void removeFragment(FragmentManager manager,Fragment fragment){
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.remove(fragment);

@@ -36,6 +36,7 @@ public class StartActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent1 = new Intent(StartActivity.this, ModuleActivity.class);
+                startActivity(intent1);
             }
         });
     }

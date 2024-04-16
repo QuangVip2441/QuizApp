@@ -22,7 +22,7 @@ public class QuestionActivity extends AppCompatActivity {
         String moduleID = intent.getStringExtra("Key");
 
 
-        FragmentUtils.replaceFragment(getSupportFragmentManager(), new QuestionFragment(0, moduleID), true);
+        FragmentUtils.replaceFragmentQuestion(getSupportFragmentManager(), new QuestionFragment(0, moduleID), true);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
