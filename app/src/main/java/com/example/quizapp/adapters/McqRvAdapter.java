@@ -20,7 +20,6 @@ public class McqRvAdapter extends RecyclerView.Adapter<McqRvAdapter.ViewHolder> 
 
     private final int RESOURCE_ID;
     private ArrayList<ChoiceModel> mChoices;
-    private ArrayList<QuestionModel> mQuestions;
     private int mSelectedItem = -1;
 
     public int getPosition() {
@@ -37,7 +36,6 @@ public class McqRvAdapter extends RecyclerView.Adapter<McqRvAdapter.ViewHolder> 
         this.RESOURCE_ID = RESOURCE_ID;
         this.mChoices = mChoices;
     }
-
 
     @NonNull
     @Override

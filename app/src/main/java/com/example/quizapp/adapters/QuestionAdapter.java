@@ -20,50 +20,45 @@ import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.List;
 
-public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.MyViewHolder> {
+public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHolder> {
 
+    private final int RESOURCE_ID;
     private ArrayList<QuestionModel> questionModels;
-    private ItemClickListener clickListener;
-    public QuestionAdapter(ArrayList<QuestionModel> questionModels){
+
+    public QuestionAdapter(int RESOURCE_ID, ArrayList<QuestionModel> questionModels) {
+        this.RESOURCE_ID = RESOURCE_ID;
         this.questionModels = questionModels;
-        this.clickListener = clickListener;
     }
+
+
     @NonNull
     @Override
-    public QuestionAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_item_header_number_question, parent, false);
-
-        return new MyViewHolder(view);
+    public QuestionAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(RESOURCE_ID, parent, false);
+        QuestionAdapter.ViewHolder holder = new ViewHolder(view);
+        return holder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull QuestionAdapter.MyViewHolder holder, int position) {
-        holder.txtnumber.setText(questionModels.get(position).getId());
+    public void onBindViewHolder(@NonNull QuestionAdapter.ViewHolder holder, int position) {
+        QuestionModel questionModel = questionModels.get(holder.getAdapterPosition());
+        holder.txtnumber.setText(String.valueOf(position + 1));
 
-//        holder.itemView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                clickListener.onItemClick(questionModels.get(position));
-//            }
-//        });
+
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return questionModels.size();
     }
 
-    class MyViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder{
+        private TextView txtnumber;
 
-        TextView txtnumber;
-        public MyViewHolder (View view){
-            super(view);
-            txtnumber = view.findViewById(R.id.txtnumber);
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            txtnumber = itemView.findViewById(R.id.txtnumber);
         }
-    }
-
-    public  interface ItemClickListener{
-
-        public void onItemClick(QuestionModel questionModel);
     }
 }

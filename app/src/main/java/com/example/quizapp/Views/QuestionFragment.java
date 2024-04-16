@@ -19,6 +19,7 @@ import com.example.quizapp.Models.ChoiceModel;
 import com.example.quizapp.Models.QuestionModel;
 import com.example.quizapp.R;
 import com.example.quizapp.adapters.McqRvAdapter;
+import com.example.quizapp.adapters.QuestionAdapter;
 import com.example.quizapp.ultils.Constant;
 import com.example.quizapp.ultils.FragmentUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -51,6 +52,7 @@ public class QuestionFragment extends Fragment {
     private String mSelectedModuleID;
 
     private McqRvAdapter mcqRVAdapter;
+    private QuestionAdapter questionAdapter;
     // Firebase
     private FirebaseFirestore mFirestore;
     private CollectionReference mRefCollectionQuestions;
@@ -94,13 +96,6 @@ public class QuestionFragment extends Fragment {
         buttonNext = view.findViewById(R.id.buttonNext);
         progressBar = view.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);
-
-        mFirestore = FirebaseFirestore.getInstance();
-        mRefCollectionQuestions = mFirestore
-                .collection(Constant.Database.Module.COLLECTION_MODULE)
-                .document(mSelectedModuleID)
-                .collection(Constant.Database.Question.COLLECTION_QUESTIONS);
-
 
         Bundle bundle = getArguments();
         if (bundle != null) {
@@ -152,81 +147,18 @@ public class QuestionFragment extends Fragment {
 
             }
         });
+        progressBar.show();
         loadData(view);
+        progressBar.hide();
         return view;
     }
 
 
     private void loadData(View view) {
-        if (mQuestions.size() > 0) {
+        if (mQuestions != null) {
             showQuestion(view);
         }
-        else {
-            progressBar.show();
-            mRefCollectionQuestions
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            progressBar.hide();
 
-                            if (task.isSuccessful()) {
-                                mQuestions.clear();
-
-                                ArrayList<QuestionModel> listquestion = new ArrayList<>();
-
-
-
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    Map<String, Object> data = document.getData();
-                                    ArrayList<ChoiceModel> choices = new ArrayList<>();
-
-                                    ArrayList<HashMap<String, Object>> temp = (ArrayList<HashMap<String, Object>>) data.get(Constant.Database.Question.CHOICES);
-
-                                    for (HashMap<String, Object> i : temp) {
-                                        choices.add(new ChoiceModel(
-                                                (String) i.get(Constant.Database.Choice.ID),
-                                                (String) i.get(Constant.Database.Choice.CONTENT)
-                                        ));
-                                    }
-
-                                    QuestionModel question = new QuestionModel(
-                                            (String) data.get(Constant.Database.Question.ID),
-                                            (String) data.get(Constant.Database.Question.CONTENT),
-                                            choices,
-                                            (String) data.get(Constant.Database.Question.CORRECT)
-                                    );
-
-
-                                        //listquestion.add(question);
-                                        mQuestions.add(question);
-
-                                }
-
-//                                if (listquestion != null){
-//                                    ArrayList<Integer> listRandom = new ArrayList<>();
-//                                    for (int i = 0; i < listquestion.size(); i++)
-//                                    {
-//                                        listRandom.add(i);
-//                                    }
-//                                    Collections.shuffle(listRandom);
-//                                    for (int i = 0; i < numberOfQuestionsToSelect ; i++){
-//                                        int randomIndex = listRandom.get(i);
-//                                        mQuestions.add(listquestion.get(randomIndex));
-//
-//                                    }
-//                                }
-
-                                if (mQuestions != null) {
-
-                                    showQuestion(view);
-//                                    totalQuestion.setText("/" + mQuestions.size());
-                                }
-                            }
-                        }
-                    });
-
-        }
     }
 
     private void showQuestion(View view) {
@@ -237,6 +169,7 @@ public class QuestionFragment extends Fragment {
                     R.layout.layout_item_answer,
                     mQuestions.get(mOrder).getChoices()
             );
+
             LinearLayoutManager layoutManager = new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false);
             recyclerChoices.setLayoutManager(layoutManager);
             recyclerChoices.setAdapter(mcqRVAdapter);
