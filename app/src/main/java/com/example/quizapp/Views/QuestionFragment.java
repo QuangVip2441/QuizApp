@@ -182,14 +182,7 @@ public class QuestionFragment extends Fragment {
         Bundle bundle = new Bundle();
         bundle.putInt("correctAns", correctAns);
 
-        ResultFragment resultFragment = new ResultFragment();
-        resultFragment.setArguments(bundle);
 
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragmentQuestion, resultFragment)
-                .addToBackStack(null)
-                .commit();
     }
 
 }

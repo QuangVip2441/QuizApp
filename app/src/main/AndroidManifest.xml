@@ -13,6 +13,12 @@
         android:theme="@style/Theme.QuizApp"
         tools:targetApi="31">
         <activity
+            android:name=".Views.RandomQuestionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Views.ResultActivity"
+            android:exported="false" />
+        <activity
             android:name=".Views.StartActivity"
             android:exported="false" />
         <activity

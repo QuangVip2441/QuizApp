@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".Views.QuestionFragment"
+    tools:context=".Views.RandomQuestionFragment"
     android:padding="12dp"
-    android:id="@+id/fragmentQuestion"
+    android:id="@+id/fragmentRandomQuestion"
     android:background="@color/colorwhitegray">
-
 
     <androidx.core.widget.ContentLoadingProgressBar
         android:id="@+id/progressBar"
@@ -35,7 +34,7 @@
             android:layout_marginStart="6dp"
             android:layout_marginEnd="6dp">
             <TextView
-                android:id="@+id/textId"
+                android:id="@+id/txtRandomQuestionId"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
@@ -46,7 +45,7 @@
                 android:textStyle="bold"/>
 
             <TextView
-                android:id="@+id/textContent"
+                android:id="@+id/txtRandomQuestionContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
@@ -57,7 +56,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerChoices"
+            android:id="@+id/recyclerRandomQuestionChoices"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="5"/>
@@ -69,7 +68,7 @@
             android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonPrevious"
+                android:id="@+id/btnRandomQuestionPrevious"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -82,7 +81,7 @@
                 android:layout_weight="1"/>
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonNext"
+                android:id="@+id/btnRandomQuestionNext"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -91,4 +90,4 @@
         </LinearLayout>
     </LinearLayout>
 
-</RelativeLayout>
+</FrameLayout>

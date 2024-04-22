@@ -57,6 +57,7 @@ public class Constant {
             public static final String PHONE = "phone";//--
             public static final String PHOTO = "photo";//--
             public static final String STATUS = "status";
+            public static final String TIME_LOGIN = "time_login"; // ngày truy cập
         }
 
     }

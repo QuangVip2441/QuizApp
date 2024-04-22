@@ -7,7 +7,7 @@
     tools:context=".Views.StartActivity"
     android:gravity="center"
     android:orientation="vertical"
-    android:background="@color/colorpurple">
+    android:background="@color/colorblue">
 
     <ImageView
         android:layout_width="80dp"
@@ -18,7 +18,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Test Quiz App MKU"
+        android:text="Bài Thi Sát Hạch"
         android:textColor="@color/white"
         android:textSize="25sp"
         android:layout_marginTop="50dp"
@@ -27,8 +27,16 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Study for Test"
+        android:text="Số lượng câu hỏi: 50"
+        android:textSize="17sp"
         android:layout_marginTop="5dp"
+        android:textColor="@color/white"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Thời gian: 30 phút"
+        android:layout_marginTop="5dp"
+        android:textSize="17sp"
         android:textColor="@color/white"/>
 
     <androidx.appcompat.widget.AppCompatButton
@@ -39,7 +47,7 @@
         android:layout_marginEnd="50dp"
         android:layout_marginTop="50dp"
         android:text="Start Quiz"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         android:textAllCaps="false"
         android:background="@drawable/round_back_secondary"/>
 

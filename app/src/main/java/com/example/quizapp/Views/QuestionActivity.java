@@ -16,6 +16,7 @@ import android.os.CountDownTimer;
 import android.widget.TextView;
 
 import com.example.quizapp.Models.ChoiceModel;
+import com.example.quizapp.Models.ModuleModel;
 import com.example.quizapp.Models.QuestionModel;
 import com.example.quizapp.R;
 import com.example.quizapp.adapters.QuestionAdapter;
@@ -36,11 +37,12 @@ import java.util.concurrent.TimeUnit;
 
 public class QuestionActivity extends AppCompatActivity {
 
-    private TextView txtTimer;
+    private TextView txtTimer, txtNumderQuestion, txtTotalQuestion;
     private CountDownTimer countDownTimer;
     private RecyclerView recyclerNumberQuestion;
     private QuestionAdapter questionAdapter;
     private ArrayList<QuestionModel> mQuestions;
+    private ArrayList<ModuleModel> mModels;
     private int mOrder;
     private String mSelectedModuleID;
     private FirebaseFirestore mFirestore;
@@ -52,6 +54,8 @@ public class QuestionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_question);
         txtTimer = findViewById(R.id.txtTimer);
         recyclerNumberQuestion = findViewById(R.id.recyclerNumberQuestion);
+        txtTotalQuestion = findViewById(R.id.txtTotalQuestion);
+        txtNumderQuestion = findViewById(R.id.txtNumderQuestion);
 
         Intent intent = getIntent();
         String moduleID = intent.getStringExtra("Key");
@@ -93,9 +97,16 @@ public class QuestionActivity extends AppCompatActivity {
                                         (String) data.get(Constant.Database.Question.CORRECT)
                                 );
 
+                                ModuleModel model = new ModuleModel(
+                                        (String) data.get(Constant.Database.Module.ID),
+                                        (String) data.get(Constant.Database.Module.NAME),
+                                        (String) data.get(Constant.Database.Module.INTRODUCTION),
+                                        (long) data.get(Constant.Database.Module.NUMBER_QUESTIONS)
+                                );
 
                                 //listquestion.add(question);
                                 mQuestions.add(question);
+                                mModels.add(model);
                             }
                             questionAdapter = new QuestionAdapter(R.layout.layout_item_header_number_question, mQuestions);
                             LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
@@ -106,8 +117,14 @@ public class QuestionActivity extends AppCompatActivity {
                         }
                     }
                 });
+        long numberQuestion = 0;
+        for (ModuleModel moduleModel : mModels){
+             numberQuestion = moduleModel.getNumberQuestions();
+        }
+        txtTotalQuestion.setText(String.valueOf(numberQuestion));
 
-        startQuizTimer(Test_timer);
+
+            startQuizTimer(Test_timer);
 
     }
 
@@ -142,11 +159,8 @@ public class QuestionActivity extends AppCompatActivity {
         FragmentUtils.removeFragment(getSupportFragmentManager(), fragmentquestion);
 
         // Thêm ResultFragment vào activity
-        ResultFragment resultFragment = new ResultFragment();
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragmentQuestion, resultFragment)
-                .addToBackStack(null)
-                .commit();
+        Intent intent = new Intent(QuestionActivity.this, ResultActivity.class);
+        startActivity(intent);
+
     }
 }

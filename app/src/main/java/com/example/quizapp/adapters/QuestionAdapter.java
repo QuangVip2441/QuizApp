@@ -22,6 +22,7 @@ import java.util.List;
 
 public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHolder> {
 
+    private OnItemClickListener mListener;
     private final int RESOURCE_ID;
     private ArrayList<QuestionModel> questionModels;
 
@@ -47,6 +48,9 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
 
 
     }
+    public interface OnItemClickListener {
+        void onItemClick(String questionId);
+    }
 
     @Override
     public int getItemCount() {
@@ -59,6 +63,15 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             txtnumber = itemView.findViewById(R.id.txtnumber);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mListener != null){
+                        mListener.onItemClick(questionModels.get(getAdapterPosition()).getId());
+                    }
+                }
+            });
         }
     }
 }

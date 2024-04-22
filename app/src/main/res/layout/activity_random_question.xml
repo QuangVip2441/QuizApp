@@ -4,10 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Views.QuestionActivity"
+    tools:context=".Views.RandomQuestionActivity"
     android:orientation="vertical">
-
-
     <LinearLayout
         android:id="@+id/topLinearLayout"
         android:layout_width="match_parent"
@@ -32,7 +30,7 @@
                 />
 
             <TextView
-                android:id="@+id/txtNumderQuestion"
+                android:id="@+id/txtRandomNumderQuestion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="1"
@@ -49,7 +47,7 @@
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"/>
             <TextView
-                android:id="@+id/txtTotalQuestion"
+                android:id="@+id/txtRandomTotalQuestion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="50"
@@ -66,7 +64,7 @@
                 />
 
             <TextView
-                android:id="@+id/txtTimer"
+                android:id="@+id/txtRandomTimer"
                 android:layout_width="wrap_content"
                 android:layout_height="34dp"
                 android:layout_marginLeft="4dp"
@@ -76,17 +74,16 @@
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerNumberQuestion"
+            android:id="@+id/RandomrecyclerNumberQuestion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/topview"
             android:layout_weight="1"
             />
-
     </LinearLayout>
-    
+
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragment_question"
+        android:id="@+id/fragment_Random_Question"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/topLinearLayout"/>

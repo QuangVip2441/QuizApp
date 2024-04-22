@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Views.ResultFragment"
+    tools:context=".Views.ResultActivity"
     android:orientation="vertical"
-    android:background="@color/colorpurple"
-    android:id="@+id/FragmentResult">
+    android:background="@color/colorblue">
 
     <TextView
         android:layout_width="match_parent"
@@ -15,7 +15,7 @@
         android:textColor="@color/white"
         android:textSize="25sp"
         android:textStyle="bold"
-        android:text="Quiz Result"
+        android:text="Kết Quả"
         />
 
     <LinearLayout
@@ -34,33 +34,23 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Congratulations"
+            android:text="BÀI THI KẾT THÚC"
             android:letterSpacing=".1"
             android:textStyle="bold"
             android:textColor="@color/white"
             android:layout_marginTop="10dp"
             android:textSize="30sp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_marginTop="5dp"
-            android:layout_marginStart="50dp"
-            android:layout_marginEnd="50dp"
-            android:letterSpacing=".1"
-            android:text="You've completed the quiz successfully"
-            android:textSize="16sp"
-            android:textColor="@color/white"
-            />
+
 
         <TextView
             android:layout_marginTop="30dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:letterSpacing=".2"
-            android:textColor="#80FFFFFF"
-            android:text="YOUR SCORE"/>
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:text="Điểm của bạn"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -112,8 +102,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:letterSpacing=".2"
-                    android:textColor="#80FFFFFF"
-                    android:text="CORRECT"/>
+                    android:textSize="18sp"
+                    android:textColor="@color/white"
+                    android:text="Số câu đúng"/>
 
                 <TextView
                     android:id="@+id/txtcorrect"
@@ -138,8 +129,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:letterSpacing=".2"
-                    android:textColor="#80FFFFFF"
-                    android:text="INCORRECT"/>
+                    android:textSize="18sp"
+                    android:textColor="@color/white"
+                    android:text="Số câu sai"/>
 
                 <TextView
                     android:id="@+id/txtincorrect"
@@ -170,7 +162,7 @@
                 android:layout_marginEnd="15dp"
                 android:layout_weight="1"
                 android:background="@drawable/round_back_white_20"
-                android:text="Share Result"
+                android:text="Xem lại phần thi"
                 android:textAllCaps="false"
                 />
 
@@ -181,13 +173,12 @@
                 android:layout_marginStart="15dp"
                 android:layout_weight="1"
                 android:background="@drawable/round_back_secondary_20"
-                android:text="Re-Take Quiz"
+                android:text="Trang chủ"
                 android:textColor="@color/white"
                 android:textAllCaps="false"
                 android:clickable="true"
                 />
         </LinearLayout>
-
     </LinearLayout>
 
 </LinearLayout>
