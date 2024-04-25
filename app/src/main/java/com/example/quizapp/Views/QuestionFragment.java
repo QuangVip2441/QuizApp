@@ -1,5 +1,6 @@
 package com.example.quizapp.Views;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -53,10 +54,11 @@ public class QuestionFragment extends Fragment {
 
     private McqRvAdapter mcqRVAdapter;
     private QuestionAdapter questionAdapter;
+
     // Firebase
     private FirebaseFirestore mFirestore;
     private CollectionReference mRefCollectionQuestions;
-    private int Test_timer = 600;
+    private int numberquestioni = 1;
 
     private int correctAns = 0;
     private int numberOfQuestionsToSelect = 10;

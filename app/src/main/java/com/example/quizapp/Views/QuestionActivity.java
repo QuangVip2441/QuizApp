@@ -57,6 +57,7 @@ public class QuestionActivity extends AppCompatActivity {
         txtTotalQuestion = findViewById(R.id.txtTotalQuestion);
         txtNumderQuestion = findViewById(R.id.txtNumderQuestion);
 
+
         Intent intent = getIntent();
         String moduleID = intent.getStringExtra("Key");
 
@@ -123,10 +124,11 @@ public class QuestionActivity extends AppCompatActivity {
         }
         txtTotalQuestion.setText(String.valueOf(numberQuestion));
 
-
-            startQuizTimer(Test_timer);
+        startQuizTimer(Test_timer);
 
     }
+
+
 
     private void startQuizTimer(int maxTimeInseconds){
         countDownTimer = new CountDownTimer(maxTimeInseconds * 1000, 1000) {
