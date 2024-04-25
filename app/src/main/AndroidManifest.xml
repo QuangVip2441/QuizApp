@@ -40,10 +40,10 @@
             android:name=".Views.ProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".Views.LoginActivity"
+            android:name=".RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".RegisterActivity"
+            android:name=".Views.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

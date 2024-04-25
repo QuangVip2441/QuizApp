@@ -2,6 +2,9 @@ package com.example.quizapp.Views;
 
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
+import static com.example.quizapp.ultils.Constant.Database.Module.COLLECTION_MODULE;
+import static com.example.quizapp.ultils.Constant.Database.User.COLLECTION_USER;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -20,7 +23,10 @@ import android.widget.TextView;
 
 import com.example.quizapp.Models.UserModel;
 import com.example.quizapp.R;
+import com.example.quizapp.ultils.Constant;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -28,9 +34,16 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
+
+import org.checkerframework.checker.units.qual.C;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -39,12 +52,12 @@ public class ProfileActivity extends AppCompatActivity {
     private Button btnEditProfile;
     private ImageButton imgbtnChangeAvtImage;
     private ImageView imageAvt;
-    SharedPreferences sharedPreferences;
     private ContentLoadingProgressBar progressBar;
-    private DatabaseReference databaseReference;
     private FirebaseUser user;
     private String userID = "";
     private String Email = "";
+    private FirebaseFirestore mFirestore;
+    private CollectionReference mRefCollectionUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,9 +73,11 @@ public class ProfileActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("user");
         user = FirebaseAuth.getInstance().getCurrentUser();
         userID = user.getUid();
+
+        mFirestore = FirebaseFirestore.getInstance();
+        mRefCollectionUser = mFirestore.collection(Constant.Database.User.COLLECTION_USER);
 
         Email = user.getEmail();
         txtEmail.setText(Email);
@@ -90,32 +105,32 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
         progressBar.show();
-        databaseReference.child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
-            String name, phone, mssv;
+
+        mFirestore.collection(COLLECTION_USER).document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                UserModel userModel = snapshot.getValue(UserModel.class);
-                if (userModel != null) {
-                    name = userModel.getUsername();
-                    phone = userModel.getPhone();
-                    mssv = userModel.getMssv();
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()){
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    if (documentSnapshot.exists()) {
+                        String mssv = documentSnapshot.getString(Constant.Database.User.MSSV);
+                        String username = documentSnapshot.getString(Constant.Database.User.USERNAME);
+                        String email = documentSnapshot.getString(Constant.Database.User.EMAIL);
+                        String phone = documentSnapshot.getString(Constant.Database.User.PHONE);
 
+                        txtUsername.setText(username);
+                        txtPhoneNumber.setText(phone);
+                        txtMSSV.setText(mssv);
 
+                        progressBar.hide();
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
 
-                    txtUsername.setText(name);
-                    txtPhoneNumber.setText(phone);
-                    txtMSSV.setText(mssv);
-
-                    progressBar.hide();
+                }else {
+                    Log.d(TAG, "get failed with ", task.getException());
                 }
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.w(TAG,"Failed to read value", error.toException());
-            }
         });
-
         imgbtnChangeAvtImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
