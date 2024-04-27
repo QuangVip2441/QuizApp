@@ -4,6 +4,7 @@ import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
 import static com.example.quizapp.ultils.Constant.Database.Module.COLLECTION_MODULE;
 import static com.example.quizapp.ultils.Constant.Database.User.COLLECTION_USER;
+import static com.example.quizapp.ultils.Constant.Database.User.ID;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +21,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.quizapp.Models.UserModel;
 import com.example.quizapp.R;
@@ -35,6 +37,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -44,6 +47,9 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import org.checkerframework.checker.units.qual.C;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -57,7 +63,8 @@ public class ProfileActivity extends AppCompatActivity {
     private String userID = "";
     private String Email = "";
     private FirebaseFirestore mFirestore;
-    private CollectionReference mRefCollectionUser;
+    private ArrayList<UserModel> userModels;
+    private DocumentReference mRefCollectionUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,10 +84,10 @@ public class ProfileActivity extends AppCompatActivity {
         userID = user.getUid();
 
         mFirestore = FirebaseFirestore.getInstance();
-        mRefCollectionUser = mFirestore.collection(Constant.Database.User.COLLECTION_USER);
 
         Email = user.getEmail();
         txtEmail.setText(Email);
+
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -100,37 +107,35 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ProfileActivity.this, EditProfileActivity.class);
-                intent.putExtra("userID", userID);
                 startActivity(intent);
             }
         });
         progressBar.show();
 
-        mFirestore.collection(COLLECTION_USER).document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        mFirestore.collection(COLLECTION_USER).document(Email).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()){
-                    DocumentSnapshot documentSnapshot = task.getResult();
-                    if (documentSnapshot.exists()) {
-                        String mssv = documentSnapshot.getString(Constant.Database.User.MSSV);
-                        String username = documentSnapshot.getString(Constant.Database.User.USERNAME);
-                        String email = documentSnapshot.getString(Constant.Database.User.EMAIL);
-                        String phone = documentSnapshot.getString(Constant.Database.User.PHONE);
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Map<String, Object> data = document.getData();
+                        String mssv = (String) data.get(Constant.Database.User.MSSV);
+                        String phone = (String) data.get(Constant.Database.User.PHONE);
+                        String username = (String) data.get(Constant.Database.User.USERNAME);
 
+                        txtMSSV.setText(mssv);
                         txtUsername.setText(username);
                         txtPhoneNumber.setText(phone);
-                        txtMSSV.setText(mssv);
-
-                        progressBar.hide();
                     } else {
-                        Log.d(TAG, "No such document");
+                        Log.d(TAG, "No document found with email: " + Email);
                     }
-
-                }else {
-                    Log.d(TAG, "get failed with ", task.getException());
+                    progressBar.hide();
+                } else {
+                    Log.d(TAG, "Error getting document: ", task.getException());
                 }
             }
         });
+
         imgbtnChangeAvtImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

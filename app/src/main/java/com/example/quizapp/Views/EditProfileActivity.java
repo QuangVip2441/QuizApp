@@ -1,5 +1,7 @@
 package com.example.quizapp.Views;
 
+import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -15,14 +17,21 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.quizapp.R;
+import com.example.quizapp.ultils.Constant;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
@@ -36,8 +45,10 @@ public class EditProfileActivity extends AppCompatActivity {
     private EditText txteditName, txteditPhone, txteditMSSV;
     private Button btnEditProfile;
     private ContentLoadingProgressBar progressBar;
-    DatabaseReference databaseReference;
-    private static final String USERS = "user";
+    private FirebaseUser user;
+    private String Email = "";
+    private FirebaseFirestore mFirestore;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,70 +61,68 @@ public class EditProfileActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("user");
-
 
         Toolbar toolbar = findViewById(R.id.toolbaredit);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Intent intent = getIntent();
-        String userID = intent.getStringExtra("userID");
+        mFirestore = FirebaseFirestore.getInstance();
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        Email = user.getEmail();
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageReference = storage.getReference("images").child(userID);
-
-
-        DatabaseReference rootref = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference useref = rootref.child(USERS);
-        Log.v("USERID", useref.getKey());
+        StorageReference storageReference = storage.getReference("images").child(Email);
 
         progressBar.show();
-        useref.addValueEventListener(new ValueEventListener() {
-            String name, phone, mssv;
+        mFirestore.collection(Constant.Database.User.COLLECTION_USER).document(Email).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot keyId : snapshot.getChildren()){
-                    if (keyId.child("id").getValue().equals(userID)){
-                        name = keyId.child("username").getValue(String.class);
-                        phone = keyId.child("phone").getValue(String.class);
-                        mssv = keyId.child("mssv").getValue(String.class);
-                        break;
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Map<String, Object> data = document.getData();
+                        String mssv = (String) data.get(Constant.Database.User.MSSV);
+                        String phone = (String) data.get(Constant.Database.User.PHONE);
+                        String username = (String) data.get(Constant.Database.User.USERNAME);
+
+                        txteditMSSV.setText(mssv);
+                        txteditName.setText(username);
+                        txteditPhone.setText(phone);
+
+                        storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                Picasso.get()
+                                        .load(uri)
+                                        .into(imageAvt);
+                                progressBar.hide();
+                            }
+                        });
+                    } else {
+                        Log.d(TAG, "No document found with email: " + Email);
                     }
+                    progressBar.hide();
+                } else {
+                    Log.d(TAG, "Error getting document: ", task.getException());
                 }
-                txteditPhone.setText(phone);
-                txteditName.setText(name);
-                txteditMSSV.setText(mssv);
-
-                storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        Picasso.get()
-                                .load(uri)
-                                .into(imageAvt);
-                        progressBar.hide();
-                    }
-                });
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
-        String nodeName = "user";
-        String userId = userID;
+
 
         btnEditProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String username = txteditName.getText().toString();
+                String phone = txteditPhone.getText().toString();
+                String mssv = txteditMSSV.getText().toString();
+
                 Map<String, Object> updatedData = new HashMap<>();
-                updatedData.put("username", txteditName.getText().toString());
-                updatedData.put("phone",txteditPhone.getText().toString());
-                updatedData.put("mssv",txteditMSSV.getText().toString());
+                updatedData.put("username", username);
+                updatedData.put("phone", phone);
+                updatedData.put("mssv", mssv);
 
-
-                rootref.child(nodeName).child(userId).updateChildren(updatedData)
+                mFirestore.collection(Constant.Database.User.COLLECTION_USER).document(Email)
+                        .update(updatedData)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void unused) {

@@ -1,10 +1,13 @@
 package com.example.quizapp;
 
+import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
@@ -15,6 +18,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -30,6 +34,7 @@ public class RegisterActivity extends AppCompatActivity {
     private FirebaseFirestore mFirestore;
     private CollectionReference mRefCollectionUser;
     private FirebaseAuth mAuth;
+    private FirebaseUser user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,10 +58,11 @@ public class RegisterActivity extends AppCompatActivity {
                 String mssv = editMSSV.getText().toString();
                 String username = editUserName.getText().toString();
                 String phone = editPhone.getText().toString();
-                AddUser(mssv, username, email, phone);
+
                 mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
+                        AddUser(mssv, username, email, phone);
                         Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
                         startActivity(intent);
                     }
@@ -74,13 +80,11 @@ public class RegisterActivity extends AppCompatActivity {
 
         mRefCollectionUser = mFirestore.collection(Constant.Database.User.COLLECTION_USER);
 
-        mRefCollectionUser.add(user).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+        // Tạo tài liệu với email làm id
+        mRefCollectionUser.document(email).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
-            public void onSuccess(DocumentReference documentReference) {
-                String id = documentReference.getId();
-                Map<String, Object> update = new HashMap<>();
-                update.put(Constant.Database.User.ID, id);
-                mRefCollectionUser.document(id).update(update);
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "User added successfully");
             }
         });
     }
