@@ -4,7 +4,10 @@ import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.widget.ContentLoadingProgressBar;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -26,15 +29,19 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 public class EditPasswordActivity extends AppCompatActivity {
 
     private ShapeableImageView imageAvt;
     private EditText txteditUsedPassword, txteditnewPassword, txteditrepeatPassword;
     private Button btnEditPassword;
+    private ContentLoadingProgressBar progressBar;
     private FirebaseUser user;
     private String Email = "";
-    private String Password = "";
+    private String NewPassword = "";
+    private String repeatPassword = "";
+    private String currentPassword = "";
     private FirebaseAuth mAuth;
 
     @Override
@@ -46,47 +53,59 @@ public class EditPasswordActivity extends AppCompatActivity {
         txteditrepeatPassword = findViewById(R.id.txteditrepeatPassword);
         imageAvt = findViewById(R.id.imageAvt);
         btnEditPassword = findViewById(R.id.btnEditPassword);
+        progressBar = findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.GONE);
 
 
         user = FirebaseAuth.getInstance().getCurrentUser();
+        String userID = user.getUid();
+
         Email = user.getEmail();
-        mAuth = FirebaseAuth.getInstance();
+
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageReference = storage.getReference("images").child(Email);
+        StorageReference storageReference = storage.getReference("images").child(userID);
 
-        if (txteditnewPassword.getText().toString() == txteditrepeatPassword.getText().toString()){
-            String currentPassword = txteditnewPassword.getText().toString();
-            AuthCredential credential = EmailAuthProvider.getCredential(Email, currentPassword);
-
-            user.reauthenticate(credential).addOnSuccessListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onSuccess(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        String newPassword = txteditnewPassword.getText().toString();
-                        user.updatePassword(newPassword).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-
-                            }
-                        });
-                    }else {
-                        Log.d(TAG, "Error re-authenticating user.");
-                        Toast.makeText(EditPasswordActivity.this,"Mật khẩu mới không trùng khớp", Toast.LENGTH_LONG).show();
-
-                    }
-                }
-            });
-        }else
-        {
-            Toast.makeText(EditPasswordActivity.this,"Mật khẩu mới không trùng khớp", Toast.LENGTH_LONG).show();
-        }
-
+        progressBar.show();
+        storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Picasso.get()
+                        .load(uri)
+                        .into(imageAvt);
+                progressBar.hide();
+            }
+        });
 
         btnEditPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                NewPassword = txteditnewPassword.getText().toString();
+                repeatPassword = txteditrepeatPassword.getText().toString();
+                if (NewPassword.equals(repeatPassword)){
+                    currentPassword = txteditUsedPassword.getText().toString();
+                    AuthCredential credential = EmailAuthProvider.getCredential(Email, currentPassword);
+                    user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                user.updatePassword(NewPassword).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        Intent intent = new Intent(EditPasswordActivity.this, ProfileActivity.class);
+                                        startActivity(intent);
+                                    }
+                                });
+                            }else {
+                                Log.d(TAG, "Error re-authenticating user.");
+                                Toast.makeText(EditPasswordActivity.this,"Mật khẩu mới không trùng khớp", Toast.LENGTH_LONG).show();
 
+                            }
+                        }
+                    });
+                }else {
+                    Toast.makeText(EditPasswordActivity.this,"Mật khẩu mới không trùng khớp", Toast.LENGTH_LONG).show();
+                }
             }
         });
 

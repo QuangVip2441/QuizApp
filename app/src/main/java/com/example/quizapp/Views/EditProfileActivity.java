@@ -68,10 +68,11 @@ public class EditProfileActivity extends AppCompatActivity {
 
         mFirestore = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
+        String userID = user.getUid();
         Email = user.getEmail();
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageReference = storage.getReference("images").child(Email);
+        StorageReference storageReference = storage.getReference("images").child(userID);
 
         progressBar.show();
         mFirestore.collection(Constant.Database.User.COLLECTION_USER).document(Email).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
