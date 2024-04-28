@@ -75,7 +75,7 @@ public class EditProfileActivity extends AppCompatActivity {
         StorageReference storageReference = storage.getReference("images").child(userID);
 
         progressBar.show();
-        mFirestore.collection(Constant.Database.User.COLLECTION_USER).document(Email).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        mFirestore.collection(Constant.Database.User.COLLECTION_USER).document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
@@ -122,7 +122,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 updatedData.put("phone", phone);
                 updatedData.put("mssv", mssv);
 
-                mFirestore.collection(Constant.Database.User.COLLECTION_USER).document(Email)
+                mFirestore.collection(Constant.Database.User.COLLECTION_USER).document(userID)
                         .update(updatedData)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override

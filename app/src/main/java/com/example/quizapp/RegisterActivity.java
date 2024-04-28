@@ -34,7 +34,7 @@ public class RegisterActivity extends AppCompatActivity {
     private FirebaseFirestore mFirestore;
     private CollectionReference mRefCollectionUser;
     private FirebaseAuth mAuth;
-    private FirebaseUser user;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +62,10 @@ public class RegisterActivity extends AppCompatActivity {
                 mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        AddUser(mssv, username, email, phone);
+                        FirebaseUser user = task.getResult().getUser();
+                        String userID = user.getUid();
+
+                        AddUser(userID,mssv, username, email, phone);
                         Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
                         startActivity(intent);
                     }
@@ -71,7 +74,7 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    private void AddUser(String mssv, String username, String email, String phone){
+    private void AddUser(String id, String mssv, String username, String email, String phone){
         Map<String, Object> user = new HashMap<>();
         user.put(Constant.Database.User.MSSV, mssv);
         user.put(Constant.Database.User.USERNAME, username);
@@ -80,8 +83,8 @@ public class RegisterActivity extends AppCompatActivity {
 
         mRefCollectionUser = mFirestore.collection(Constant.Database.User.COLLECTION_USER);
 
-        // Tạo tài liệu với email làm id
-        mRefCollectionUser.document(email).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+
+        mRefCollectionUser.document(id).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "User added successfully");

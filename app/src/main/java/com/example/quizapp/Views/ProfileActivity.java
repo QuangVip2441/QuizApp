@@ -113,7 +113,7 @@ public class ProfileActivity extends AppCompatActivity {
         });
         progressBar.show();
 
-        mFirestore.collection(COLLECTION_USER).document(Email).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        mFirestore.collection(COLLECTION_USER).document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
