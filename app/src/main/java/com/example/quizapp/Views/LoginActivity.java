@@ -102,7 +102,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     //String userID = mAuth.getCurrentUser().getUid();
-                    Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     //intent.putExtra("userID", userID);
                     startActivity(intent);
                 }else

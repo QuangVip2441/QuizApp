@@ -183,8 +183,6 @@ public class QuestionFragment extends Fragment {
         // back to fragment
         Bundle bundle = new Bundle();
         bundle.putInt("correctAns", correctAns);
-
-
     }
 
 }

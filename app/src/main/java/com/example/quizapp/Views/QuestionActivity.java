@@ -1,5 +1,6 @@
 package com.example.quizapp.Views;
 
+import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 import static com.example.quizapp.ultils.Constant.Database.Module.COLLECTION_MODULE;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.example.quizapp.Models.ChoiceModel;
@@ -46,7 +48,7 @@ public class QuestionActivity extends AppCompatActivity {
     private int mOrder;
     private String mSelectedModuleID;
     private FirebaseFirestore mFirestore;
-    private CollectionReference mRefCollectionQuestions;
+    private CollectionReference mRefCollectionQuestions, mRefCollectionModule;
     private int Test_timer = 600;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,8 +64,36 @@ public class QuestionActivity extends AppCompatActivity {
         String moduleID = intent.getStringExtra("Key");
 
         ArrayList<QuestionModel> mQuestions = new ArrayList<>();
-
+        ArrayList<ModuleModel> mModels = new ArrayList<>();
         mFirestore = FirebaseFirestore.getInstance();
+
+        mRefCollectionModule = mFirestore.collection(COLLECTION_MODULE).document(moduleID).getParent();
+        mRefCollectionModule.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        Map<String, Object> data = document.getData();
+                        ModuleModel model = new ModuleModel(
+                                (String) data.get(Constant.Database.Module.ID),
+                                (String) data.get(Constant.Database.Module.NAME),
+                                (String) data.get(Constant.Database.Module.INTRODUCTION),
+                                (long) data.get(Constant.Database.Module.NUMBER_QUESTIONS)
+                        );
+                        mModels.add(model);
+
+                        long numberQuestion = 0;
+                        for (ModuleModel moduleModel : mModels){
+                            numberQuestion = moduleModel.getNumberQuestions();
+                        }
+                        txtTotalQuestion.setText(String.valueOf(numberQuestion));
+                    }
+                } else {
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                }
+
+            }
+        });
         mRefCollectionQuestions = mFirestore
                 .collection(COLLECTION_MODULE)
                 .document(moduleID)
@@ -98,16 +128,11 @@ public class QuestionActivity extends AppCompatActivity {
                                         (String) data.get(Constant.Database.Question.CORRECT)
                                 );
 
-                                ModuleModel model = new ModuleModel(
-                                        (String) data.get(Constant.Database.Module.ID),
-                                        (String) data.get(Constant.Database.Module.NAME),
-                                        (String) data.get(Constant.Database.Module.INTRODUCTION),
-                                        (long) data.get(Constant.Database.Module.NUMBER_QUESTIONS)
-                                );
+
 
                                 //listquestion.add(question);
                                 mQuestions.add(question);
-                                mModels.add(model);
+
                             }
                             questionAdapter = new QuestionAdapter(R.layout.layout_item_header_number_question, mQuestions);
                             LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
@@ -118,17 +143,9 @@ public class QuestionActivity extends AppCompatActivity {
                         }
                     }
                 });
-        long numberQuestion = 0;
-        for (ModuleModel moduleModel : mModels){
-             numberQuestion = moduleModel.getNumberQuestions();
-        }
-        txtTotalQuestion.setText(String.valueOf(numberQuestion));
-
         startQuizTimer(Test_timer);
 
     }
-
-
 
     private void startQuizTimer(int maxTimeInseconds){
         countDownTimer = new CountDownTimer(maxTimeInseconds * 1000, 1000) {

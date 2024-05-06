@@ -46,6 +46,14 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
         QuestionModel questionModel = questionModels.get(holder.getAdapterPosition());
         holder.txtnumber.setText(String.valueOf(position + 1));
 
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mListener != null) {
+                    mListener.onItemClick(questionModel.getId());
+                }
+            }
+        });
 
     }
     public interface OnItemClickListener {
