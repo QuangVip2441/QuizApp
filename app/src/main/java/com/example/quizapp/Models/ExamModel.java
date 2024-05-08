@@ -1,56 +1,95 @@
 package com.example.quizapp.Models;
 
+import java.util.ArrayList;
+import java.util.Date;
+
 public class ExamModel {
-    private String ExId;
-    private String ExQuestion;
-    private String ExAnswer;
-    private String ExCorrect;
+    private int incorrect;
+    private ArrayList<QuestionModel> questions;
+    private ArrayList<Integer> correct;
+    private int durationInMinutes;
+    private Date startDateTime;
+    private Date endDateTime;
+    private String state;
+    private float marks; //(diem)
+
+
+    public ExamModel(int incorrect, ArrayList<QuestionModel> questions, ArrayList<Integer> correct, int durationInMinutes, Date startDateTime, Date endDateTime, String state, float marks) {
+        this.incorrect = incorrect;
+        this.questions = questions;
+        this.correct = correct;
+        this.durationInMinutes = durationInMinutes;
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+        this.state = state;
+        this.marks = marks;
+    }
 
     public ExamModel() {
     }
 
-    public ExamModel(String exId, String exQuestion, String exAnswer, String exCorrect) {
-        ExId = exId;
-        ExQuestion = exQuestion;
-        ExAnswer = exAnswer;
-        ExCorrect = exCorrect;
+
+    public int getIncorrect() {
+        return incorrect;
     }
 
-    public ExamModel(String exQuestion, String exAnswer, String exCorrect) {
-        ExQuestion = exQuestion;
-        ExAnswer = exAnswer;
-        ExCorrect = exCorrect;
+    public void setIncorrect(int incorrect) {
+        this.incorrect = incorrect;
     }
 
-    public String getExId() {
-        return ExId;
+    public ArrayList<QuestionModel> getQuestions() {
+        return questions;
     }
 
-    public void setExId(String exId) {
-        ExId = exId;
+    public void setQuestions(ArrayList<QuestionModel> questions) {
+        this.questions = questions;
     }
 
-    public String getExQuestion() {
-        return ExQuestion;
+    public ArrayList<Integer> getCorrect() {
+        return correct;
     }
 
-    public void setExQuestion(String exQuestion) {
-        ExQuestion = exQuestion;
+    public void setCorrect(ArrayList<Integer> correct) {
+        this.correct = correct;
     }
 
-    public String getExAnswer() {
-        return ExAnswer;
+    public int getDurationInMinutes() {
+        return durationInMinutes;
     }
 
-    public void setExAnswer(String exAnswer) {
-        ExAnswer = exAnswer;
+    public void setDurationInMinutes(int durationInMinutes) {
+        this.durationInMinutes = durationInMinutes;
     }
 
-    public String getExCorrect() {
-        return ExCorrect;
+    public Date getStartDateTime() {
+        return startDateTime;
     }
 
-    public void setExCorrect(String exCorrect) {
-        ExCorrect = exCorrect;
+    public void setStartDateTime(Date startDateTime) {
+        this.startDateTime = startDateTime;
+    }
+
+    public Date getEndDateTime() {
+        return endDateTime;
+    }
+
+    public void setEndDateTime(Date endDateTime) {
+        this.endDateTime = endDateTime;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public float getMarks() {
+        return marks;
+    }
+
+    public void setMarks(float marks) {
+        this.marks = marks;
     }
 }

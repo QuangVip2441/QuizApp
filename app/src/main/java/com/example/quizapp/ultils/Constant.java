@@ -12,24 +12,24 @@ public class Constant {
         }
 
         // Từng câu
-        public static class Exam {
-            public static final String COLLECTION_EXAM = "exam";
-            public static final String EXAMID = "exid";
-            public static final String EXAMQUESTION = "exquestion";
-            public static final String EXAMANSWER = "exanswer"; // user choosed answer
-            public static final String EXAMCORRECT = "excorrect";
+        public static class Quiz {
+            public static final String COLLECTION_QUIZ = "quiz";
+            public static final String USERID = "userid";
         }
 
         // Từng bài thi
-        public static class Candidate{
-            public static final String COLLECTION_CANDIDATE = "candidate";
+        public static class Exam{
             public static final String ID = "id";
-            public static final String START_TIMER = "start_timer";
-            public static final String END_TIMER = "end_timer";
-            public static final String NUMBERQUESTION = "numberquestion";
+            public static final String COLLECTION_EXAM = "exam";
+            public static final String STARTDATETIME = "start_timer";
+            public static final String ENDDATETIME = "end_timer";
+            public static final String QUESTION = "question";
+            public static final String CORRECT = "correct";
             public static final String DURATION_IN_MINUTES = "durationinminutes";
             public static final String MARKS = "marks";
             public static final String INCORRECT = "incorrect";
+            public static final String STATE = "state";
+            public static final String GRADE = "grade";
         }
 
         public static class Question {
@@ -58,6 +58,14 @@ public class Constant {
             public static final String PHOTO = "photo";//--
             public static final String STATUS = "status";
             public static final String TIME_LOGIN = "time_login"; // ngày truy cập
+        }
+
+        public class TestAdministration {
+            public static final String COLLECTION_TEST_ADMIN = "test_admin";
+            public static final String ID = "id";
+            public static final String MODULEID = "id";
+            public static final String TEST_NAME = "test_name";
+            public static final String TEST_GET_NUMBER_QUESTIONS = "test_get_numberQuestions";
         }
 
     }

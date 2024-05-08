@@ -4,20 +4,20 @@ import java.util.ArrayList;
 
 public class CandidateModel {
     private String id;
-    private ArrayList<QuizDetailModel> quizzdetail;
+    private ArrayList<ExamModel> examModels;
     private String IncorrectAnswer;
 
     public CandidateModel() {
     }
 
-    public CandidateModel(String id, ArrayList<QuizDetailModel> quizzdetail, String incorrectAnswer) {
+    public CandidateModel(String id, ArrayList<ExamModel> examModels, String incorrectAnswer) {
         this.id = id;
-        this.quizzdetail = quizzdetail;
+        this.examModels = examModels;
         IncorrectAnswer = incorrectAnswer;
     }
 
-    public CandidateModel(ArrayList<QuizDetailModel> quizzdetail, String incorrectAnswer) {
-        this.quizzdetail = quizzdetail;
+    public CandidateModel(ArrayList<ExamModel> examModels, String incorrectAnswer) {
+        this.examModels = examModels;
         IncorrectAnswer = incorrectAnswer;
     }
 
@@ -29,13 +29,6 @@ public class CandidateModel {
         this.id = id;
     }
 
-    public ArrayList<QuizDetailModel> getQuizzdetail() {
-        return quizzdetail;
-    }
-
-    public void setQuizzdetail(ArrayList<QuizDetailModel> quizzdetail) {
-        this.quizzdetail = quizzdetail;
-    }
 
     public String getIncorrectAnswer() {
         return IncorrectAnswer;
@@ -43,5 +36,13 @@ public class CandidateModel {
 
     public void setIncorrectAnswer(String incorrectAnswer) {
         IncorrectAnswer = incorrectAnswer;
+    }
+
+    public ArrayList<ExamModel> getExamModels() {
+        return examModels;
+    }
+
+    public void setExamModels(ArrayList<ExamModel> examModels) {
+        this.examModels = examModels;
     }
 }
