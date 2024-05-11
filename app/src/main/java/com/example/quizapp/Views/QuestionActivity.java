@@ -27,6 +27,7 @@ import com.example.quizapp.adapters.QuestionAdapter;
 import com.example.quizapp.ultils.Constant;
 import com.example.quizapp.ultils.FragmentUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -37,6 +38,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import org.checkerframework.checker.units.qual.C;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -54,15 +57,12 @@ public class QuestionActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer;
     private RecyclerView recyclerNumberQuestion;
     private QuestionAdapter questionAdapter;
-    private ArrayList<QuestionModel> mQuestions;
-    private ArrayList<ModuleModel> mModels;
     private ExamModel examModel;
-    private int mOrder;
     private FirebaseUser user;
     private String userID;
     private FirebaseFirestore mFirestore;
-    private CollectionReference mRefCollectionQuestions;
-    private int Test_timer = 600;
+    private CollectionReference mRefCollectionQuestions, mRefCollectionExam;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +98,26 @@ public class QuestionActivity extends AppCompatActivity {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        // Thời gian cho phép với 30 phút
+        int timeAllowedInSeconds = 30 * 60;
+        startQuizTimer(currentTimeMillis, timeAllowedInSeconds);
+        HashMap<String, Object> map = new HashMap<>();
+        map.put(Constant.Database.Exam.STARTDATETIME, examModel.getStartDateTime());
+
+
+        mRefCollectionExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ).document(userID)
+                .collection(Constant.Database.Exam.COLLECTION_EXAM);
+
+        mRefCollectionExam.add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            @Override
+            public void onSuccess(DocumentReference documentReference) {
+                String id = documentReference.getId();
+                Map<String, Object> update = new HashMap<>();
+                examModel.setId(id);
+                update.put(Constant.Database.Exam.ID, id);
+                mRefCollectionExam.document(id).update(update);
+            }
+        });
 
         mRefCollectionQuestions = mFirestore
                 .collection(COLLECTION_MODULE)
@@ -111,8 +131,7 @@ public class QuestionActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
                         if (task.isSuccessful()) {
-                            //mQuestions.clear();
-
+                            mQuestions.clear();
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Map<String, Object> data = document.getData();
                                 ArrayList<ChoiceModel> choices = new ArrayList<>();
@@ -133,33 +152,29 @@ public class QuestionActivity extends AppCompatActivity {
                                         (String) data.get(Constant.Database.Question.CORRECT)
                                 );
 
-
-
-                                //listquestion.add(question);
                                 mQuestions.add(question);
 
                             }
                             Collections.shuffle(mQuestions);
+                            // add questions
                             questionAdapter = new QuestionAdapter(R.layout.layout_item_header_number_question, mQuestions);
                             LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
                             recyclerNumberQuestion.setLayoutManager(layoutManager);
                             recyclerNumberQuestion.setAdapter(questionAdapter);
 
-                            FragmentUtils.replaceFragmentQuestion(getSupportFragmentManager(), new QuestionFragment(mQuestions,0, moduleID, examModel), true);
-
+                            QuestionFragment questionFragment = new QuestionFragment(mQuestions, 0, moduleID, examModel);
+                            FragmentUtils.replaceFragmentQuestion(getSupportFragmentManager(), questionFragment, true);
                         }
                     }
                 });
 
-        // Thời gian cho phép với 30 phút
-        int timeAllowedInSeconds = 30 * 60;
-        startQuizTimer(currentTimeMillis, timeAllowedInSeconds);
     }
+
+
 
     private void startQuizTimer(long currentTimeMillis, int timeAllowedInSeconds) {
         // Chuyển thời gian cho phép từ giây sang mili giây
         long timeAllowedMillis = timeAllowedInSeconds * 1000;
-
         // Tính thời gian kết thúc làm bài
         long endTimeMillis = currentTimeMillis + timeAllowedMillis;
 
@@ -168,33 +183,77 @@ public class QuestionActivity extends AppCompatActivity {
             public void onTick(long millisUntilFinished) {
                 long getMinute = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished);
                 long getSecond = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) % 60;
-
                 String generateTime = String.format(Locale.getDefault(),"%02d:%02d", getMinute, getSecond);
-
                 txtTimer.setText(generateTime);
             }
-
             @Override
             public void onFinish() {
-                // Finish Quiz when time is finished
-                FinishQuiz();
+//                Date dateendtime = new Date(endTimeMillis);
+//                Date date = new Date(endTimeMillis - currentTimeMillis);
+//                // Finish Quiz when time is finished
+//                examModel.setEndDateTime(dateendtime);
+//                examModel.setDurationInMinutes(date);
+                finishQuiz();
             }
         };
-
         // Start Timer
         countDownTimer.start();
     }
 
+    private void finishQuiz() {
+        // Gọi phương thức finishQuiz từ fragment
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragmentQuestion);
+        if (fragment instanceof QuestionFragment) {
+            ((QuestionFragment) fragment).finishQuiz();
+        }
+//        HashMap<String, Object> map = new HashMap<>();
+//        map.put(Constant.Database.Exam.INCORRECT, examModel.getIncorrect());
+//        map.put(Constant.Database.Exam.QUESTION, examModel.getQuestions());
+//        map.put(Constant.Database.Exam.CORRECT, examModel.getCorrect());
+//        map.put(Constant.Database.Exam.DURATION_IN_MINUTES, examModel.getDurationInMinutes());
+//        map.put(Constant.Database.Exam.STARTDATETIME, examModel.getStartDateTime());
+//        map.put(Constant.Database.Exam.ENDDATETIME, examModel.getEndDateTime());
+//        map.put(Constant.Database.Exam.STATE, examModel.getState());
+//        map.put(Constant.Database.Exam.MARKS, examModel.getMarks());
+//
+//
+//        mRefCollectionExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ).document(userID)
+//                .collection(Constant.Database.Exam.COLLECTION_EXAM);
+//
+//        mRefCollectionExam.add(examModel)
+//                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+//                    @Override
+//                    public void onSuccess(DocumentReference documentReference) {
+//                        String Examid = documentReference.getId();
+//                        Map<String, Object> update = new HashMap<>();
+//                        update.put(Constant.Database.Exam.ID, Examid);
+//                        mRefCollectionExam.document(Examid).set(update) // Use set() instead of update()
+//                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                                    @Override
+//                                    public void onSuccess(Void aVoid) {
+//                                        // Document updated successfully
+//                                    }
+//                                })
+//                                .addOnFailureListener(new OnFailureListener() {
+//                                    @Override
+//                                    public void onFailure(@NonNull Exception e) {
+//                                        // Handle failure
+//                                    }
+//                                });
+//                    }
+//                })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        // Handle failure
+//                    }
+//                });
 
-    private void FinishQuiz(){
-        // Gỡ bỏ Fragment Question
-        Fragment fragmentquestion = getSupportFragmentManager().findFragmentById(R.id.fragmentQuestion);
-        FragmentUtils.removeFragment(getSupportFragmentManager(), fragmentquestion);
 
         // Thêm ResultFragment vào activity
-        Intent intent = new Intent(QuestionActivity.this, ResultActivity.class);
-        startActivity(intent);
-
+//        Intent intent = new Intent(QuestionActivity.this, ResultActivity.class);
+//        startActivity(intent);
     }
+
 
 }

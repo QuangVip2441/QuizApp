@@ -4,20 +4,17 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class ExamModel {
-    private int incorrect;
-    private ArrayList<QuestionModel> questions;
-    private ArrayList<Integer> correct;
-    private int durationInMinutes;
+    private String id;
+    private ArrayList<QuizModel> quizs ;
+    private Date durationInMinutes;//
     private Date startDateTime;
     private Date endDateTime;
     private String state;
     private float marks; //(diem)
 
-
-    public ExamModel(int incorrect, ArrayList<QuestionModel> questions, ArrayList<Integer> correct, int durationInMinutes, Date startDateTime, Date endDateTime, String state, float marks) {
-        this.incorrect = incorrect;
-        this.questions = questions;
-        this.correct = correct;
+    public ExamModel(String id, ArrayList<QuizModel> quizs, Date durationInMinutes, Date startDateTime, Date endDateTime, String state, float marks) {
+        this.id = id;
+        this.quizs = quizs;
         this.durationInMinutes = durationInMinutes;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
@@ -28,36 +25,36 @@ public class ExamModel {
     public ExamModel() {
     }
 
-
-    public int getIncorrect() {
-        return incorrect;
+    public ExamModel(ArrayList<QuizModel> quizs, Date durationInMinutes, Date startDateTime, Date endDateTime, String state, float marks) {
+        this.quizs = quizs;
+        this.durationInMinutes = durationInMinutes;
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+        this.state = state;
+        this.marks = marks;
     }
 
-    public void setIncorrect(int incorrect) {
-        this.incorrect = incorrect;
+    public String getId() {
+        return id;
     }
 
-    public ArrayList<QuestionModel> getQuestions() {
-        return questions;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public void setQuestions(ArrayList<QuestionModel> questions) {
-        this.questions = questions;
+    public ArrayList<QuizModel> getQuizs() {
+        return quizs;
     }
 
-    public ArrayList<Integer> getCorrect() {
-        return correct;
+    public void setQuizs(ArrayList<QuizModel> quizs) {
+        this.quizs = quizs;
     }
 
-    public void setCorrect(ArrayList<Integer> correct) {
-        this.correct = correct;
-    }
-
-    public int getDurationInMinutes() {
+    public Date getDurationInMinutes() {
         return durationInMinutes;
     }
 
-    public void setDurationInMinutes(int durationInMinutes) {
+    public void setDurationInMinutes(Date durationInMinutes) {
         this.durationInMinutes = durationInMinutes;
     }
 
