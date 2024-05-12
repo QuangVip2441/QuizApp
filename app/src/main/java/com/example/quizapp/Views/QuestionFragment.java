@@ -2,6 +2,7 @@ package com.example.quizapp.Views;
 
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.core.widget.ContentLoadingProgressBar;
@@ -16,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.quizapp.MainActivity;
 import com.example.quizapp.Models.ChoiceModel;
 import com.example.quizapp.Models.ExamModel;
 import com.example.quizapp.Models.QuestionModel;
@@ -30,12 +32,19 @@ import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class QuestionFragment extends Fragment {
 
@@ -51,6 +60,7 @@ public class QuestionFragment extends Fragment {
     private int mOrder;
     private String mSelectedModuleID;
     private String questionId;
+    private float marks = 0.0F;
     private McqRvAdapter mcqRVAdapter;
     // Firebase
     private FirebaseFirestore mFirestore;
@@ -79,6 +89,7 @@ public class QuestionFragment extends Fragment {
     }
 
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,6 +112,7 @@ public class QuestionFragment extends Fragment {
         userID = user.getUid();
         mFirestore = FirebaseFirestore.getInstance();
 
+
         if (NewexamModel != null) {
              startDateTime = NewexamModel.getStartDateTime();
         }
@@ -121,6 +133,7 @@ public class QuestionFragment extends Fragment {
                         if (selectId.equals(current)) {
                             quiz.add(new QuizModel(mQuestions.get(mOrder).getId(), mQuestions.get(mOrder).getContent(), selectId, current, true));
                             NewexamModel.setQuizs(quiz);
+                            NewexamModel.setMarks(marks = (float) (marks + 0.2));
                         } else {
                             quiz.add(new QuizModel(mQuestions.get(mOrder).getId(), mQuestions.get(mOrder).getContent(), selectId, current, false));
                             NewexamModel.setQuizs(quiz);
@@ -199,28 +212,42 @@ public class QuestionFragment extends Fragment {
 
 
     public void finishQuiz() {
-        if (onFinishQuizListener != null) {
-            onFinishQuizListener.onFinishQuiz();
-            NewexamModel.setState("Hoàn thành");
-            HashMap<String, Object> map = new HashMap<>();
-            map.put(Constant.Database.Exam.STATE, NewexamModel.getState());
-
-            mRefDocumentExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ)
-                    .document(userID).collection(Constant.Database.Exam.COLLECTION_EXAM)
-                    .document(NewexamModel.getId());
-            mRefDocumentExam.update(map).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void unused) {
-                    Log.d(TAG, "Inserted state");
-                }
-            });
-            if (onFinishQuizListener != null) {
-                onFinishQuizListener.onFinishQuiz();
-            }
-            FragmentUtils.removeFragment(getActivity().getSupportFragmentManager(), this);
-
+        NewexamModel.setState("Hoàn thành");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
+        String currentDateTime = dateFormat.format(new Date());
+        Date startTime = NewexamModel.getStartDateTime();
+        long startTimeMillis = startTime.getTime();
+        Date currentTime;
+        try {
+            currentTime = dateFormat.parse(currentDateTime);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
         }
+        long currentTimeMillis = currentTime.getTime();
+        long durationMillis = currentTimeMillis - startTimeMillis;
+        // Convert milliseconds to minutes
+        long durationMinutes = TimeUnit.MILLISECONDS.toMinutes(durationMillis);
+        // Use durationMinutes as needed
+
+        NewexamModel.setEndDateTime(currentTime);
+        NewexamModel.setDurationInMinutes(durationMinutes);
+
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put(Constant.Database.Exam.ENDDATETIME, NewexamModel.getEndDateTime());
+        map.put(Constant.Database.Exam.DURATION_IN_MINUTES, NewexamModel.getDurationInMinutes());
+        map.put(Constant.Database.Exam.MARKS, NewexamModel.getMarks());
+        map.put(Constant.Database.Exam.STATE, NewexamModel.getState());
+
+        mRefDocumentExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ)
+                .document(userID).collection(Constant.Database.Exam.COLLECTION_EXAM)
+                .document(NewexamModel.getId());
+        mRefDocumentExam.update(map).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Intent intent = new Intent(getActivity(), MainActivity.class);
+                startActivity(intent);
+            }
+        });
     }
-
-
 }

@@ -53,7 +53,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class QuestionActivity extends AppCompatActivity  implements QuestionFragment.OnFinishQuizListener {
+public class QuestionActivity extends AppCompatActivity{
 
     private TextView txtTimer;
     private CountDownTimer countDownTimer;
@@ -65,7 +65,6 @@ public class QuestionActivity extends AppCompatActivity  implements QuestionFrag
     private FirebaseFirestore mFirestore;
     private CollectionReference mRefCollectionQuestions, mRefCollectionExam;
     private DocumentReference mRefDocumentExam;
-    private QuestionFragment.OnFinishQuizListener onFinishQuizListener;
 
 
     @Override
@@ -134,7 +133,6 @@ public class QuestionActivity extends AppCompatActivity  implements QuestionFrag
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
                         if (task.isSuccessful()) {
                             mQuestions.clear();
                             for (QueryDocumentSnapshot document : task.getResult()) {
@@ -176,7 +174,6 @@ public class QuestionActivity extends AppCompatActivity  implements QuestionFrag
     }
 
 
-
     private void startQuizTimer(long currentTimeMillis, int timeAllowedInSeconds) {
         // Chuyển thời gian cho phép từ giây sang mili giây
         long timeAllowedMillis = timeAllowedInSeconds * 1000;
@@ -193,72 +190,67 @@ public class QuestionActivity extends AppCompatActivity  implements QuestionFrag
             }
             @Override
             public void onFinish() {
-                if (onFinishQuizListener != null) {
-                    onFinishQuizListener.onFinishQuiz();
+                examModel.setState("Hoàn thành");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
+                String currentDateTime = dateFormat.format(new Date());
+                Date startTime = examModel.getStartDateTime();
+                long startTimeMillis = startTime.getTime();
+                Date currentTime;
+                try {
+                    currentTime = dateFormat.parse(currentDateTime);
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
                 }
+                long currentTimeMillis = currentTime.getTime();
+                long durationMillis = currentTimeMillis - startTimeMillis;
+                // Convert milliseconds to minutes
+                long durationMinutes = TimeUnit.MILLISECONDS.toMinutes(durationMillis);
+                // Use durationMinutes as needed
+
+                examModel.setEndDateTime(currentTime);
+                examModel.setDurationInMinutes(durationMinutes);
+
+                mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ).document(userID)
+                        .collection(Constant.Database.Exam.COLLECTION_EXAM)
+                        .document(examModel.getId())
+                        .get()
+                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                List<List<Map<String, Object>>> nestedArrayList = (List<List<Map<String, Object>>>) documentSnapshot.get("question");
+                                int trueStateCount = 0;
+                                for (List<Map<String, Object>> array : nestedArrayList) {
+                                    for (Map<String, Object> map : array) {
+                                        boolean state = (boolean) map.get("state");
+                                        if (state == true) {
+                                            trueStateCount++;
+                                        }
+                                    }
+                                }
+                                examModel.setMarks(trueStateCount);
+                            }
+                        });
+
+                HashMap<String, Object> map = new HashMap<>();
+                map.put(Constant.Database.Exam.ENDDATETIME, examModel.getEndDateTime());
+                map.put(Constant.Database.Exam.DURATION_IN_MINUTES, examModel.getDurationInMinutes());
+                map.put(Constant.Database.Exam.MARKS, examModel.getMarks());
+                map.put(Constant.Database.Exam.STATE, examModel.getState());
+
+                mRefDocumentExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ)
+                        .document(userID).collection(Constant.Database.Exam.COLLECTION_EXAM)
+                        .document(examModel.getId());
+                mRefDocumentExam.update(map).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Intent intent = new Intent(QuestionActivity.this, MainActivity.class);
+                        startActivity(intent);
+                    }
+                });
+
             }
         };
         // Start Timer
         countDownTimer.start();
-    }
-
-    @Override
-    public void onFinishQuiz() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
-        String currentDateTime = dateFormat.format(new Date());
-        Date startTime = examModel.getStartDateTime();
-        long startTimeMillis = startTime.getTime();
-        Date currentTime;
-        try {
-            currentTime = dateFormat.parse(currentDateTime);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        long currentTimeMillis = currentTime.getTime();
-        long durationMillis = currentTimeMillis - startTimeMillis;
-        // Convert milliseconds to minutes
-        long durationMinutes = TimeUnit.MILLISECONDS.toMinutes(durationMillis);
-        // Use durationMinutes as needed
-
-        examModel.setEndDateTime(currentTime);
-        examModel.setDurationInMinutes(durationMinutes);
-
-        mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ).document(userID)
-                .collection(Constant.Database.Exam.COLLECTION_EXAM)
-                .document(examModel.getId())
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        List<List<Map<String, Object>>> nestedArrayList = (List<List<Map<String, Object>>>) documentSnapshot.get("question");
-                        int trueStateCount = 0;
-                        for (List<Map<String, Object>> array : nestedArrayList) {
-                            for (Map<String, Object> map : array) {
-                                boolean state = (boolean) map.get("state");
-                                if (state == true) {
-                                    trueStateCount++;
-                                }
-                            }
-                        }
-                        examModel.setMarks(trueStateCount);
-                    }
-                });
-
-        HashMap<String, Object> map = new HashMap<>();
-        map.put(Constant.Database.Exam.ENDDATETIME, examModel.getEndDateTime());
-        map.put(Constant.Database.Exam.DURATION_IN_MINUTES, examModel.getDurationInMinutes());
-        map.put(Constant.Database.Exam.MARKS, examModel.getMarks());
-
-        mRefDocumentExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ)
-                .document(userID).collection(Constant.Database.Exam.COLLECTION_EXAM)
-                .document(examModel.getId());
-        mRefDocumentExam.update(map).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
-                Intent intent = new Intent(QuestionActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
-        });
-
     }
 }
