@@ -18,6 +18,7 @@ import android.os.Parcelable;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.example.quizapp.MainActivity;
 import com.example.quizapp.Models.ChoiceModel;
 import com.example.quizapp.Models.ExamModel;
 import com.example.quizapp.Models.ModuleModel;
@@ -47,11 +48,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class QuestionActivity extends AppCompatActivity {
+public class QuestionActivity extends AppCompatActivity  implements QuestionFragment.OnFinishQuizListener {
 
     private TextView txtTimer;
     private CountDownTimer countDownTimer;
@@ -62,6 +64,9 @@ public class QuestionActivity extends AppCompatActivity {
     private String userID;
     private FirebaseFirestore mFirestore;
     private CollectionReference mRefCollectionQuestions, mRefCollectionExam;
+    private DocumentReference mRefDocumentExam;
+    private QuestionFragment.OnFinishQuizListener onFinishQuizListener;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -188,72 +193,72 @@ public class QuestionActivity extends AppCompatActivity {
             }
             @Override
             public void onFinish() {
-//                Date dateendtime = new Date(endTimeMillis);
-//                Date date = new Date(endTimeMillis - currentTimeMillis);
-//                // Finish Quiz when time is finished
-//                examModel.setEndDateTime(dateendtime);
-//                examModel.setDurationInMinutes(date);
-                finishQuiz();
+                if (onFinishQuizListener != null) {
+                    onFinishQuizListener.onFinishQuiz();
+                }
             }
         };
         // Start Timer
         countDownTimer.start();
     }
 
-    private void finishQuiz() {
-        // Gọi phương thức finishQuiz từ fragment
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragmentQuestion);
-        if (fragment instanceof QuestionFragment) {
-            ((QuestionFragment) fragment).finishQuiz();
+    @Override
+    public void onFinishQuiz() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
+        String currentDateTime = dateFormat.format(new Date());
+        Date startTime = examModel.getStartDateTime();
+        long startTimeMillis = startTime.getTime();
+        Date currentTime;
+        try {
+            currentTime = dateFormat.parse(currentDateTime);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
         }
-//        HashMap<String, Object> map = new HashMap<>();
-//        map.put(Constant.Database.Exam.INCORRECT, examModel.getIncorrect());
-//        map.put(Constant.Database.Exam.QUESTION, examModel.getQuestions());
-//        map.put(Constant.Database.Exam.CORRECT, examModel.getCorrect());
-//        map.put(Constant.Database.Exam.DURATION_IN_MINUTES, examModel.getDurationInMinutes());
-//        map.put(Constant.Database.Exam.STARTDATETIME, examModel.getStartDateTime());
-//        map.put(Constant.Database.Exam.ENDDATETIME, examModel.getEndDateTime());
-//        map.put(Constant.Database.Exam.STATE, examModel.getState());
-//        map.put(Constant.Database.Exam.MARKS, examModel.getMarks());
-//
-//
-//        mRefCollectionExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ).document(userID)
-//                .collection(Constant.Database.Exam.COLLECTION_EXAM);
-//
-//        mRefCollectionExam.add(examModel)
-//                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-//                    @Override
-//                    public void onSuccess(DocumentReference documentReference) {
-//                        String Examid = documentReference.getId();
-//                        Map<String, Object> update = new HashMap<>();
-//                        update.put(Constant.Database.Exam.ID, Examid);
-//                        mRefCollectionExam.document(Examid).set(update) // Use set() instead of update()
-//                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                                    @Override
-//                                    public void onSuccess(Void aVoid) {
-//                                        // Document updated successfully
-//                                    }
-//                                })
-//                                .addOnFailureListener(new OnFailureListener() {
-//                                    @Override
-//                                    public void onFailure(@NonNull Exception e) {
-//                                        // Handle failure
-//                                    }
-//                                });
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        // Handle failure
-//                    }
-//                });
+        long currentTimeMillis = currentTime.getTime();
+        long durationMillis = currentTimeMillis - startTimeMillis;
+        // Convert milliseconds to minutes
+        long durationMinutes = TimeUnit.MILLISECONDS.toMinutes(durationMillis);
+        // Use durationMinutes as needed
 
+        examModel.setEndDateTime(currentTime);
+        examModel.setDurationInMinutes(durationMinutes);
 
-        // Thêm ResultFragment vào activity
-//        Intent intent = new Intent(QuestionActivity.this, ResultActivity.class);
-//        startActivity(intent);
+        mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ).document(userID)
+                .collection(Constant.Database.Exam.COLLECTION_EXAM)
+                .document(examModel.getId())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        List<List<Map<String, Object>>> nestedArrayList = (List<List<Map<String, Object>>>) documentSnapshot.get("question");
+                        int trueStateCount = 0;
+                        for (List<Map<String, Object>> array : nestedArrayList) {
+                            for (Map<String, Object> map : array) {
+                                boolean state = (boolean) map.get("state");
+                                if (state == true) {
+                                    trueStateCount++;
+                                }
+                            }
+                        }
+                        examModel.setMarks(trueStateCount);
+                    }
+                });
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put(Constant.Database.Exam.ENDDATETIME, examModel.getEndDateTime());
+        map.put(Constant.Database.Exam.DURATION_IN_MINUTES, examModel.getDurationInMinutes());
+        map.put(Constant.Database.Exam.MARKS, examModel.getMarks());
+
+        mRefDocumentExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ)
+                .document(userID).collection(Constant.Database.Exam.COLLECTION_EXAM)
+                .document(examModel.getId());
+        mRefDocumentExam.update(map).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Intent intent = new Intent(QuestionActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
     }
-
-
 }

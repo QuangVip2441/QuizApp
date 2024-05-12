@@ -2,7 +2,6 @@ package com.example.quizapp.Views;
 
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
-import android.nfc.Tag;
 import android.os.Bundle;
 
 import androidx.core.widget.ContentLoadingProgressBar;
@@ -30,7 +29,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -38,7 +36,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
 public class QuestionFragment extends Fragment {
 
@@ -48,7 +45,8 @@ public class QuestionFragment extends Fragment {
     private MaterialButton buttonNext;
     private ContentLoadingProgressBar progressBar;
     private ArrayList<QuestionModel> mQuestions;
-    private ExamModel examModel;
+    private ArrayList<QuizModel> quiz;
+    private ExamModel NewexamModel;
     private Date startDateTime;
     private int mOrder;
     private String mSelectedModuleID;
@@ -59,43 +57,27 @@ public class QuestionFragment extends Fragment {
     private FirebaseUser user;
     private String userID;
     private DocumentReference mRefDocumentExam;
-    private int correctAns = 0;
+
     public QuestionFragment() {
+        this.quiz = new ArrayList<QuizModel>(); // Initialize the ArrayList
     }
 
-    public QuestionFragment(int mOrder, String mSelectedModuleID) {
-        this.mQuestions = new ArrayList<>();
-        this.mOrder = mOrder;
-        this.mSelectedModuleID = mSelectedModuleID;
-    }
-
-
-    public QuestionFragment(ArrayList<QuestionModel> mQuestions, int mOrder, String mSelectedModuleID) {
+    public QuestionFragment(ArrayList<QuestionModel> mQuestions, int mOrder, String mSelectedModuleID, ExamModel examModel, ArrayList<QuizModel> quiz) {
         this.mQuestions = mQuestions;
         this.mOrder = mOrder;
         this.mSelectedModuleID = mSelectedModuleID;
-    }
-    public QuestionFragment(ArrayList<QuestionModel> mQuestions, int mOrder, String mSelectedModuleID, int correctAns) {
-        this.mQuestions = mQuestions;
-        this.mOrder = mOrder;
-        this.mSelectedModuleID = mSelectedModuleID;
-        this.correctAns = correctAns;
-    }
-
-    public QuestionFragment(ArrayList<QuestionModel> mQuestions, int mOrder, String mSelectedModuleID, int correctAns, ExamModel examModel) {
-        this.mQuestions = mQuestions;
-        this.mOrder = mOrder;
-        this.mSelectedModuleID = mSelectedModuleID;
-        this.correctAns = correctAns;
-        this.examModel = examModel;
+        this.NewexamModel = examModel;
+        this.quiz = quiz;
     }
 
     public QuestionFragment(ArrayList<QuestionModel> mQuestions, int mOrder, String mSelectedModuleID, ExamModel examModel) {
         this.mQuestions = mQuestions;
         this.mOrder = mOrder;
         this.mSelectedModuleID = mSelectedModuleID;
-        this.examModel = examModel;
+        this.NewexamModel = examModel;
+        this.quiz = new ArrayList<QuizModel>(); // Initialize the ArrayList
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -119,10 +101,9 @@ public class QuestionFragment extends Fragment {
         userID = user.getUid();
         mFirestore = FirebaseFirestore.getInstance();
 
-        if (examModel != null) {
-             startDateTime = examModel.getStartDateTime();
+        if (NewexamModel != null) {
+             startDateTime = NewexamModel.getStartDateTime();
         }
-        ArrayList<QuizModel> quiz = new ArrayList<>();
 
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,23 +117,23 @@ public class QuestionFragment extends Fragment {
                     String selectId = selectedChoice.getId();
                     String current = currentQuestion.getCorrect();
 
-                    if (selectId.equals(current)) {
-                        correctAns++;
-                        examModel.setMarks((float) (correctAns * 0.2));
-                        quiz.add(new QuizModel(mQuestions.get(mOrder).getId(), mQuestions.get(mOrder).getContent(), selectId, current, true));
-                        examModel.setQuizs(quiz);
-                    }else {
-                        quiz.add(new QuizModel(mQuestions.get(mOrder).getId(), mQuestions.get(mOrder).getContent(), selectId, current, false));
-                        examModel.setQuizs(quiz);
+                    if (mQuestions != null && mOrder >= 0 && mOrder < mQuestions.size()) {
+                        if (selectId.equals(current)) {
+                            quiz.add(new QuizModel(mQuestions.get(mOrder).getId(), mQuestions.get(mOrder).getContent(), selectId, current, true));
+                            NewexamModel.setQuizs(quiz);
+                        } else {
+                            quiz.add(new QuizModel(mQuestions.get(mOrder).getId(), mQuestions.get(mOrder).getContent(), selectId, current, false));
+                            NewexamModel.setQuizs(quiz);
+                        }
+                        NewexamModel.setState("Đang làm bài");
                     }
-                    examModel.setState("Đang làm bài");
                     HashMap<String, Object> map = new HashMap<>();
-                    map.put(Constant.Database.Exam.QUESTION, examModel.getQuizs());
-                    map.put(Constant.Database.Exam.STATE, examModel.getState());
+                    map.put(Constant.Database.Exam.QUESTION, NewexamModel.getQuizs());
+                    map.put(Constant.Database.Exam.STATE, NewexamModel.getState());
 
                     mRefDocumentExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ)
                             .document(userID).collection(Constant.Database.Exam.COLLECTION_EXAM)
-                            .document(examModel.getId());
+                            .document(NewexamModel.getId());
                     mRefDocumentExam.update(map).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void unused) {
@@ -161,12 +142,12 @@ public class QuestionFragment extends Fragment {
                     });
 
                     if (mOrder < mQuestions.size() - 1) {
-                        QuestionFragment nextFragment = new QuestionFragment(mQuestions, mOrder + 1, mSelectedModuleID, correctAns, examModel);
+                        QuestionFragment nextFragment = new QuestionFragment(mQuestions, mOrder + 1, mSelectedModuleID, NewexamModel, quiz);
                         FragmentUtils.replaceFragmentQuestion(
                                 getActivity().getSupportFragmentManager(),
                                 nextFragment,
                                 true);
-                    } else {
+                    }else {
                         finishQuiz();
                     }
                 }
@@ -218,10 +199,28 @@ public class QuestionFragment extends Fragment {
 
 
     public void finishQuiz() {
-        examModel.setState("Hoàn thành");
+        if (onFinishQuizListener != null) {
+            onFinishQuizListener.onFinishQuiz();
+            NewexamModel.setState("Hoàn thành");
+            HashMap<String, Object> map = new HashMap<>();
+            map.put(Constant.Database.Exam.STATE, NewexamModel.getState());
 
-        // Gỡ bỏ Fragment Question
-        FragmentUtils.removeFragment(getActivity().getSupportFragmentManager(), this);
+            mRefDocumentExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ)
+                    .document(userID).collection(Constant.Database.Exam.COLLECTION_EXAM)
+                    .document(NewexamModel.getId());
+            mRefDocumentExam.update(map).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void unused) {
+                    Log.d(TAG, "Inserted state");
+                }
+            });
+            if (onFinishQuizListener != null) {
+                onFinishQuizListener.onFinishQuiz();
+            }
+            FragmentUtils.removeFragment(getActivity().getSupportFragmentManager(), this);
+
+        }
     }
+
 
 }

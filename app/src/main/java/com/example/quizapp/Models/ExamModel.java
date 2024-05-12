@@ -6,13 +6,14 @@ import java.util.Date;
 public class ExamModel {
     private String id;
     private ArrayList<QuizModel> quizs ;
-    private Date durationInMinutes;//
+    private long durationInMinutes;//
     private Date startDateTime;
-    private Date endDateTime;
+    private Date endDateTime;//
     private String state;
     private float marks; //(diem)
 
-    public ExamModel(String id, ArrayList<QuizModel> quizs, Date durationInMinutes, Date startDateTime, Date endDateTime, String state, float marks) {
+
+    public ExamModel(String id, ArrayList<QuizModel> quizs, long durationInMinutes, Date startDateTime, Date endDateTime, String state, float marks) {
         this.id = id;
         this.quizs = quizs;
         this.durationInMinutes = durationInMinutes;
@@ -22,16 +23,16 @@ public class ExamModel {
         this.marks = marks;
     }
 
-    public ExamModel() {
-    }
-
-    public ExamModel(ArrayList<QuizModel> quizs, Date durationInMinutes, Date startDateTime, Date endDateTime, String state, float marks) {
+    public ExamModel(ArrayList<QuizModel> quizs, long durationInMinutes, Date startDateTime, Date endDateTime, String state, float marks) {
         this.quizs = quizs;
         this.durationInMinutes = durationInMinutes;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
         this.state = state;
         this.marks = marks;
+    }
+
+    public ExamModel() {
     }
 
     public String getId() {
@@ -50,11 +51,11 @@ public class ExamModel {
         this.quizs = quizs;
     }
 
-    public Date getDurationInMinutes() {
+    public long getDurationInMinutes() {
         return durationInMinutes;
     }
 
-    public void setDurationInMinutes(Date durationInMinutes) {
+    public void setDurationInMinutes(long durationInMinutes) {
         this.durationInMinutes = durationInMinutes;
     }
 
