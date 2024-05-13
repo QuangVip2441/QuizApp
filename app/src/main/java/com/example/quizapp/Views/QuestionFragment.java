@@ -5,6 +5,7 @@ import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,12 +29,14 @@ import com.example.quizapp.ultils.Constant;
 import com.example.quizapp.ultils.FragmentUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.ParseException;
@@ -133,7 +136,6 @@ public class QuestionFragment extends Fragment {
                         if (selectId.equals(current)) {
                             quiz.add(new QuizModel(mQuestions.get(mOrder).getId(), mQuestions.get(mOrder).getContent(), selectId, current, true));
                             NewexamModel.setQuizs(quiz);
-                            NewexamModel.setMarks(marks = (float) (marks + 0.2));
                         } else {
                             quiz.add(new QuizModel(mQuestions.get(mOrder).getId(), mQuestions.get(mOrder).getContent(), selectId, current, false));
                             NewexamModel.setQuizs(quiz);
@@ -216,22 +218,67 @@ public class QuestionFragment extends Fragment {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
         String currentDateTime = dateFormat.format(new Date());
         Date startTime = NewexamModel.getStartDateTime();
+        if (startTime == null) {
+            Log.d(TAG, "NewexamModel.getStartDateTime() is null");
+        }
         long startTimeMillis = startTime.getTime();
         Date currentTime;
         try {
             currentTime = dateFormat.parse(currentDateTime);
         } catch (ParseException e) {
-            throw new RuntimeException(e);
+            return;
         }
         long currentTimeMillis = currentTime.getTime();
-        long durationMillis = currentTimeMillis - startTimeMillis;
         // Convert milliseconds to minutes
-        long durationMinutes = TimeUnit.MILLISECONDS.toMinutes(durationMillis);
-        // Use durationMinutes as needed
+        long durationMillis = currentTimeMillis - startTimeMillis;
+        long durationMinutes = TimeUnit.MILLISECONDS.toMinutes(currentTimeMillis - startTimeMillis);
+        long remainingMillis = durationMillis - TimeUnit.MINUTES.toMillis(durationMinutes);
+        long durationSeconds = TimeUnit.MILLISECONDS.toSeconds(remainingMillis);
 
+        String durationString = String.format("%d minutes, %d seconds", durationMinutes, durationSeconds);
         NewexamModel.setEndDateTime(currentTime);
-        NewexamModel.setDurationInMinutes(durationMinutes);
+        NewexamModel.setDurationInMinutes(durationString);
 
+        // Tính điểm
+        mRefDocumentExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ)
+                .document(userID).collection(Constant.Database.Exam.COLLECTION_EXAM)
+                .document(NewexamModel.getId());
+        mRefDocumentExam.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Map<String, Object> documentData = document.getData();
+                        ArrayList<QuizModel> quizs = new ArrayList<>();
+                        ArrayList<HashMap<String, Object>> temp = (ArrayList<HashMap<String, Object>>) documentData.get(Constant.Database.Exam.QUESTION);
+                        for (HashMap<String, Object> i : temp) {
+                            quizs.add(new QuizModel(
+                                    (String) i.get("id"),
+                                    (String) i.get("questioncontent"),
+                                    (String) i.get("idanswer"),
+                                    (String) i.get("idcorrect"),
+                                    (boolean) i.get("state")
+                            ));
+                        }
+                        int trueCount = 0;
+                        for (QuizModel quiz : quizs) {
+                            if (quiz.isState()) {
+                                trueCount++;
+                            }
+                        }
+
+                        NewexamModel.setMarks((float) (trueCount * 0.2));
+
+                        // Do something with the document data
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
 
         HashMap<String, Object> map = new HashMap<>();
         map.put(Constant.Database.Exam.ENDDATETIME, NewexamModel.getEndDateTime());

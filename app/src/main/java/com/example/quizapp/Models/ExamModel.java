@@ -6,14 +6,14 @@ import java.util.Date;
 public class ExamModel {
     private String id;
     private ArrayList<QuizModel> quizs ;
-    private long durationInMinutes;//
+    private String durationInMinutes;//
     private Date startDateTime;
     private Date endDateTime;//
     private String state;
     private float marks; //(diem)
 
 
-    public ExamModel(String id, ArrayList<QuizModel> quizs, long durationInMinutes, Date startDateTime, Date endDateTime, String state, float marks) {
+    public ExamModel(String id, ArrayList<QuizModel> quizs, String durationInMinutes, Date startDateTime, Date endDateTime, String state, float marks) {
         this.id = id;
         this.quizs = quizs;
         this.durationInMinutes = durationInMinutes;
@@ -23,7 +23,7 @@ public class ExamModel {
         this.marks = marks;
     }
 
-    public ExamModel(ArrayList<QuizModel> quizs, long durationInMinutes, Date startDateTime, Date endDateTime, String state, float marks) {
+    public ExamModel(ArrayList<QuizModel> quizs, String durationInMinutes, Date startDateTime, Date endDateTime, String state, float marks) {
         this.quizs = quizs;
         this.durationInMinutes = durationInMinutes;
         this.startDateTime = startDateTime;
@@ -51,11 +51,11 @@ public class ExamModel {
         this.quizs = quizs;
     }
 
-    public long getDurationInMinutes() {
+    public String getDurationInMinutes() {
         return durationInMinutes;
     }
 
-    public void setDurationInMinutes(long durationInMinutes) {
+    public void setDurationInMinutes(String durationInMinutes) {
         this.durationInMinutes = durationInMinutes;
     }
 

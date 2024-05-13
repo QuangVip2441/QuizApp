@@ -208,7 +208,7 @@ public class QuestionActivity extends AppCompatActivity{
                 // Use durationMinutes as needed
 
                 examModel.setEndDateTime(currentTime);
-                examModel.setDurationInMinutes(durationMinutes);
+                examModel.setDurationInMinutes(String.valueOf(durationMinutes));
 
                 mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ).document(userID)
                         .collection(Constant.Database.Exam.COLLECTION_EXAM)
