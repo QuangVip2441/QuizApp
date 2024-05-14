@@ -23,7 +23,10 @@ import com.example.quizapp.Models.ChoiceModel;
 import com.example.quizapp.Models.ExamModel;
 import com.example.quizapp.Models.ModuleModel;
 import com.example.quizapp.Models.QuestionModel;
+import com.example.quizapp.Models.QuizModel;
+import com.example.quizapp.Models.TestAdministration;
 import com.example.quizapp.R;
+import com.example.quizapp.adapters.ModuleSpinnerAdapter;
 import com.example.quizapp.adapters.QuestionAdapter;
 import com.example.quizapp.ultils.Constant;
 import com.example.quizapp.ultils.FragmentUtils;
@@ -37,6 +40,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -60,11 +64,15 @@ public class QuestionActivity extends AppCompatActivity{
     private RecyclerView recyclerNumberQuestion;
     private QuestionAdapter questionAdapter;
     private ExamModel examModel;
+    private TestAdministration administration;
     private FirebaseUser user;
+    private int trueCount = 0;
+    private int TimeAllow = 30;
+    private int timeAllowedInSeconds = 0;
     private String userID;
     private FirebaseFirestore mFirestore;
     private CollectionReference mRefCollectionQuestions, mRefCollectionExam;
-    private DocumentReference mRefDocumentExam;
+    private DocumentReference mRefDocumentExam, mRefDocumentModule, mRefDocumentTestAdmin;
 
 
     @Override
@@ -83,6 +91,32 @@ public class QuestionActivity extends AppCompatActivity{
 
         ArrayList<QuestionModel> mQuestions = new ArrayList<>();
         mFirestore = FirebaseFirestore.getInstance();
+        // get time allowed
+        mRefDocumentTestAdmin = mFirestore.collection(Constant.Database.TestAdministration.COLLECTION_TEST_ADMIN)
+                .document(moduleID);
+        mRefDocumentTestAdmin.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Map<String, Object> data = document.getData();
+                        TestAdministration testAdministration = new TestAdministration(
+                                (String) data.get(Constant.Database.TestAdministration.MODULEID),
+                                (String) data.get(Constant.Database.TestAdministration.TEST_NAME),
+                                (Long) data.get(Constant.Database.TestAdministration.TEST_GET_NUMBER_QUESTIONS),
+                                (int)(data.get(Constant.Database.TestAdministration.TIMEALLOWED))
+                        );
+                        //TimeAllow = testAdministration.getTimeAllowed();
+
+                    } else {
+                        Log.d(TAG,"document does not exist");
+                    }
+                } else {
+                    Log.d(TAG,"task is not successful");
+                }
+            }
+        });
         // Tạo thời gian bắt đầu
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
         String currentDateTime = dateFormat.format(new Date());
@@ -93,6 +127,34 @@ public class QuestionActivity extends AppCompatActivity{
             throw new RuntimeException(e);
         }
         long currentTimeMillis = date.getTime();
+        // get module name
+        mRefDocumentModule = mFirestore
+                .collection(Constant.Database.Module.COLLECTION_MODULE).document(moduleID);
+        mRefDocumentModule.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Map<String, Object> data = document.getData();
+                        ModuleModel module = new ModuleModel(
+                                (String) data.get(Constant.Database.Module.ID),
+                                (String) data.get(Constant.Database.Module.NAME),
+                                (String) data.get(Constant.Database.Module.INTRODUCTION),
+                                Long.parseLong(data.get(Constant.Database.Module.NUMBER_QUESTIONS).toString())
+                        );
+                        examModel.setModulename(module.getName());
+
+                    } else {
+                        Log.d(TAG,"document does not exist");
+                    }
+                } else {
+                    Log.d(TAG,"task is not successful");
+                }
+            }
+        });
+
+        timeAllowedInSeconds = TimeAllow * 60;
         // Tạo object và gán thời gian bắt đầu
         examModel = new ExamModel();
         try {
@@ -103,7 +165,6 @@ public class QuestionActivity extends AppCompatActivity{
             e.printStackTrace();
         }
         // Thời gian cho phép với 30 phút
-        int timeAllowedInSeconds = 30 * 60;
         startQuizTimer(currentTimeMillis, timeAllowedInSeconds);
         HashMap<String, Object> map = new HashMap<>();
         map.put(Constant.Database.Exam.STARTDATETIME, examModel.getStartDateTime());
@@ -173,6 +234,84 @@ public class QuestionActivity extends AppCompatActivity{
 
     }
 
+    public void finishQuiz() {
+        mRefDocumentExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ)
+                .document(userID).collection(Constant.Database.Exam.COLLECTION_EXAM)
+                .document(examModel.getId());
+        mRefDocumentExam.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Map<String, Object> documentData = document.getData();
+                        ArrayList<QuizModel> quizs = new ArrayList<>();
+                        ArrayList<HashMap<String, Object>> temp = (ArrayList<HashMap<String, Object>>) documentData.get(Constant.Database.Exam.QUESTION);
+                        for (HashMap<String, Object> i : temp) {
+                            quizs.add(new QuizModel(
+                                    (String) i.get("id"),
+                                    (String) i.get("questioncontent"),
+                                    (String) i.get("idanswer"),
+                                    (String) i.get("idcorrect"),
+                                    (boolean) i.get("state")
+                            ));
+                        }
+                        for (QuizModel quiz : quizs) {
+                            if (quiz.isState()) {
+                                trueCount = trueCount + 2;
+                            }
+                        }
+                    }
+
+                    examModel.setState("Hoàn thành");
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
+                    String currentDateTime = dateFormat.format(new Date());
+                    Date startTime = examModel.getStartDateTime();
+                    if (startTime == null) {
+                        Log.d(TAG, "NewexamModel.getStartDateTime() is null");
+                    }
+                    long startTimeMillis = startTime.getTime();
+                    Date currentTime;
+                    try {
+                        currentTime = dateFormat.parse(currentDateTime);
+                    } catch (ParseException e) {
+                        return;
+                    }
+                    long currentTimeMillis = currentTime.getTime();
+                    // Convert milliseconds to minutes
+                    long durationMillis = currentTimeMillis - startTimeMillis;
+                    long durationMinutes = TimeUnit.MILLISECONDS.toMinutes(currentTimeMillis - startTimeMillis);
+                    long remainingMillis = durationMillis - TimeUnit.MINUTES.toMillis(durationMinutes);
+                    long durationSeconds = TimeUnit.MILLISECONDS.toSeconds(remainingMillis);
+
+                    String durationString = String.format("%d minutes, %d seconds", durationMinutes, durationSeconds);
+
+                    examModel.setEndDateTime(currentTime);
+                    examModel.setDurationInMinutes(durationString);
+                    examModel.setMarks(trueCount);
+
+                    HashMap<String, Object> map = new HashMap<>();
+                    map.put(Constant.Database.Exam.ENDDATETIME, examModel.getEndDateTime());
+                    map.put(Constant.Database.Exam.DURATION_IN_MINUTES, examModel.getDurationInMinutes());
+                    map.put(Constant.Database.Exam.MARKS, examModel.getMarks());
+                    map.put(Constant.Database.Exam.STATE, examModel.getState());
+                    map.put(Constant.Database.Exam.MODULENAME, examModel.getModulename());
+
+                    mRefDocumentExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ)
+                            .document(userID).collection(Constant.Database.Exam.COLLECTION_EXAM)
+                            .document(examModel.getId());
+                    mRefDocumentExam.update(map).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Intent intent = new Intent(QuestionActivity.this, MainActivity.class);
+                            startActivity(intent);
+                        }
+                    });
+                }
+            }
+        });
+
+    }
 
     private void startQuizTimer(long currentTimeMillis, int timeAllowedInSeconds) {
         // Chuyển thời gian cho phép từ giây sang mili giây
@@ -190,67 +329,11 @@ public class QuestionActivity extends AppCompatActivity{
             }
             @Override
             public void onFinish() {
-                examModel.setState("Hoàn thành");
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
-                String currentDateTime = dateFormat.format(new Date());
-                Date startTime = examModel.getStartDateTime();
-                long startTimeMillis = startTime.getTime();
-                Date currentTime;
-                try {
-                    currentTime = dateFormat.parse(currentDateTime);
-                } catch (ParseException e) {
-                    throw new RuntimeException(e);
-                }
-                long currentTimeMillis = currentTime.getTime();
-                long durationMillis = currentTimeMillis - startTimeMillis;
-                // Convert milliseconds to minutes
-                long durationMinutes = TimeUnit.MILLISECONDS.toMinutes(durationMillis);
-                // Use durationMinutes as needed
-
-                examModel.setEndDateTime(currentTime);
-                examModel.setDurationInMinutes(String.valueOf(durationMinutes));
-
-                mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ).document(userID)
-                        .collection(Constant.Database.Exam.COLLECTION_EXAM)
-                        .document(examModel.getId())
-                        .get()
-                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                List<List<Map<String, Object>>> nestedArrayList = (List<List<Map<String, Object>>>) documentSnapshot.get("question");
-                                int trueStateCount = 0;
-                                for (List<Map<String, Object>> array : nestedArrayList) {
-                                    for (Map<String, Object> map : array) {
-                                        boolean state = (boolean) map.get("state");
-                                        if (state == true) {
-                                            trueStateCount++;
-                                        }
-                                    }
-                                }
-                                examModel.setMarks(trueStateCount);
-                            }
-                        });
-
-                HashMap<String, Object> map = new HashMap<>();
-                map.put(Constant.Database.Exam.ENDDATETIME, examModel.getEndDateTime());
-                map.put(Constant.Database.Exam.DURATION_IN_MINUTES, examModel.getDurationInMinutes());
-                map.put(Constant.Database.Exam.MARKS, examModel.getMarks());
-                map.put(Constant.Database.Exam.STATE, examModel.getState());
-
-                mRefDocumentExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ)
-                        .document(userID).collection(Constant.Database.Exam.COLLECTION_EXAM)
-                        .document(examModel.getId());
-                mRefDocumentExam.update(map).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        Intent intent = new Intent(QuestionActivity.this, MainActivity.class);
-                        startActivity(intent);
-                    }
-                });
-
+                finishQuiz();
             }
         };
         // Start Timer
         countDownTimer.start();
     }
+
 }

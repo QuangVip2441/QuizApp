@@ -5,19 +5,25 @@ public class TestAdministration {
     private String moduleId;
     private String test_name;
     private long test_numberQuestions;
+    private int timeAllowed;
 
 
-    public TestAdministration(String id, String moduleId, String test_name, long test_numberQuestions) {
+    public TestAdministration() {
+    }
+
+    public TestAdministration(String id, String moduleId, String test_name, long test_numberQuestions, int timeAllowed) {
         this.id = id;
         this.moduleId = moduleId;
         this.test_name = test_name;
         this.test_numberQuestions = test_numberQuestions;
+        this.timeAllowed = timeAllowed;
     }
 
-    public TestAdministration(String moduleId, String test_name, long test_numberQuestions) {
+    public TestAdministration(String moduleId, String test_name, long test_numberQuestions, int timeAllowed) {
         this.moduleId = moduleId;
         this.test_name = test_name;
         this.test_numberQuestions = test_numberQuestions;
+        this.timeAllowed = timeAllowed;
     }
 
     public String getId() {
@@ -50,5 +56,13 @@ public class TestAdministration {
 
     public void setTest_numberQuestions(long test_numberQuestions) {
         this.test_numberQuestions = test_numberQuestions;
+    }
+
+    public int getTimeAllowed() {
+        return timeAllowed;
+    }
+
+    public void setTimeAllowed(int timeAllowed) {
+        this.timeAllowed = timeAllowed;
     }
 }

@@ -63,7 +63,7 @@ public class QuestionFragment extends Fragment {
     private int mOrder;
     private String mSelectedModuleID;
     private String questionId;
-    private float marks = 0.0F;
+    private int trueCount = 0;
     private McqRvAdapter mcqRVAdapter;
     // Firebase
     private FirebaseFirestore mFirestore;
@@ -214,32 +214,6 @@ public class QuestionFragment extends Fragment {
 
 
     public void finishQuiz() {
-        NewexamModel.setState("Hoàn thành");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
-        String currentDateTime = dateFormat.format(new Date());
-        Date startTime = NewexamModel.getStartDateTime();
-        if (startTime == null) {
-            Log.d(TAG, "NewexamModel.getStartDateTime() is null");
-        }
-        long startTimeMillis = startTime.getTime();
-        Date currentTime;
-        try {
-            currentTime = dateFormat.parse(currentDateTime);
-        } catch (ParseException e) {
-            return;
-        }
-        long currentTimeMillis = currentTime.getTime();
-        // Convert milliseconds to minutes
-        long durationMillis = currentTimeMillis - startTimeMillis;
-        long durationMinutes = TimeUnit.MILLISECONDS.toMinutes(currentTimeMillis - startTimeMillis);
-        long remainingMillis = durationMillis - TimeUnit.MINUTES.toMillis(durationMinutes);
-        long durationSeconds = TimeUnit.MILLISECONDS.toSeconds(remainingMillis);
-
-        String durationString = String.format("%d minutes, %d seconds", durationMinutes, durationSeconds);
-        NewexamModel.setEndDateTime(currentTime);
-        NewexamModel.setDurationInMinutes(durationString);
-
-        // Tính điểm
         mRefDocumentExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ)
                 .document(userID).collection(Constant.Database.Exam.COLLECTION_EXAM)
                 .document(NewexamModel.getId());
@@ -261,40 +235,60 @@ public class QuestionFragment extends Fragment {
                                     (boolean) i.get("state")
                             ));
                         }
-                        int trueCount = 0;
                         for (QuizModel quiz : quizs) {
                             if (quiz.isState()) {
-                                trueCount++;
+                                trueCount = trueCount + 2;
                             }
                         }
-
-                        NewexamModel.setMarks((float) (trueCount * 0.2));
-
-                        // Do something with the document data
-                    } else {
-                        Log.d(TAG, "No such document");
                     }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
+
+                    NewexamModel.setState("Hoàn thành");
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
+                    String currentDateTime = dateFormat.format(new Date());
+                    Date startTime = NewexamModel.getStartDateTime();
+                    if (startTime == null) {
+                        Log.d(TAG, "NewexamModel.getStartDateTime() is null");
+                    }
+                    long startTimeMillis = startTime.getTime();
+                    Date currentTime;
+                    try {
+                        currentTime = dateFormat.parse(currentDateTime);
+                    } catch (ParseException e) {
+                        return;
+                    }
+                    long currentTimeMillis = currentTime.getTime();
+                    // Convert milliseconds to minutes
+                    long durationMillis = currentTimeMillis - startTimeMillis;
+                    long durationMinutes = TimeUnit.MILLISECONDS.toMinutes(currentTimeMillis - startTimeMillis);
+                    long remainingMillis = durationMillis - TimeUnit.MINUTES.toMillis(durationMinutes);
+                    long durationSeconds = TimeUnit.MILLISECONDS.toSeconds(remainingMillis);
+
+                    String durationString = String.format("%d minutes, %d seconds", durationMinutes, durationSeconds);
+
+                    NewexamModel.setEndDateTime(currentTime);
+                    NewexamModel.setDurationInMinutes(durationString);
+                    NewexamModel.setMarks(trueCount);
+
+                    HashMap<String, Object> map = new HashMap<>();
+                    map.put(Constant.Database.Exam.ENDDATETIME, NewexamModel.getEndDateTime());
+                    map.put(Constant.Database.Exam.DURATION_IN_MINUTES, NewexamModel.getDurationInMinutes());
+                    map.put(Constant.Database.Exam.MARKS, NewexamModel.getMarks());
+                    map.put(Constant.Database.Exam.STATE, NewexamModel.getState());
+                    map.put(Constant.Database.Exam.MODULENAME, NewexamModel.getModulename());
+
+                    mRefDocumentExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ)
+                            .document(userID).collection(Constant.Database.Exam.COLLECTION_EXAM)
+                            .document(NewexamModel.getId());
+                    mRefDocumentExam.update(map).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Intent intent = new Intent(getActivity(), MainActivity.class);
+                            startActivity(intent);
+                        }
+                    });
                 }
             }
         });
 
-        HashMap<String, Object> map = new HashMap<>();
-        map.put(Constant.Database.Exam.ENDDATETIME, NewexamModel.getEndDateTime());
-        map.put(Constant.Database.Exam.DURATION_IN_MINUTES, NewexamModel.getDurationInMinutes());
-        map.put(Constant.Database.Exam.MARKS, NewexamModel.getMarks());
-        map.put(Constant.Database.Exam.STATE, NewexamModel.getState());
-
-        mRefDocumentExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ)
-                .document(userID).collection(Constant.Database.Exam.COLLECTION_EXAM)
-                .document(NewexamModel.getId());
-        mRefDocumentExam.update(map).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
-                Intent intent = new Intent(getActivity(), MainActivity.class);
-                startActivity(intent);
-            }
-        });
     }
 }

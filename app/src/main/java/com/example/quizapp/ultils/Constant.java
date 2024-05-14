@@ -20,16 +20,14 @@ public class Constant {
         // Từng bài thi
         public static class Exam{
             public static final String ID = "id";
+            public static final String MODULENAME = "module_name";
             public static final String COLLECTION_EXAM = "exam";
             public static final String STARTDATETIME = "start_timer";
             public static final String ENDDATETIME = "end_timer";
             public static final String QUESTION = "question";
-            public static final String CORRECT = "correct";
             public static final String DURATION_IN_MINUTES = "durationinminutes";
             public static final String MARKS = "marks";
-            public static final String INCORRECT = "incorrect";
             public static final String STATE = "state";
-            public static final String GRADE = "grade";
         }
 
         public static class Question {
@@ -61,9 +59,10 @@ public class Constant {
         }
 
         public class TestAdministration {
-            public static final String COLLECTION_TEST_ADMIN = "test_admin";
+            public static final String COLLECTION_TEST_ADMIN = "testadmin";
             public static final String ID = "id";
-            public static final String MODULEID = "id";
+            public static final String MODULEID = "moduleid";
+            public static final String TIMEALLOWED = "timeAllowed";
             public static final String TEST_NAME = "test_name";
             public static final String TEST_GET_NUMBER_QUESTIONS = "test_get_numberQuestions";
         }
