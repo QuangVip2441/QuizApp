@@ -66,14 +66,12 @@ public class EditPasswordActivity extends AppCompatActivity {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageReference = storage.getReference("images").child(userID);
 
-        progressBar.show();
         storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 Picasso.get()
                         .load(uri)
                         .into(imageAvt);
-                progressBar.hide();
             }
         });
 

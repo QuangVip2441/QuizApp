@@ -101,9 +101,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    //String userID = mAuth.getCurrentUser().getUid();
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    //intent.putExtra("userID", userID);
                     startActivity(intent);
                 }else
                     Toast.makeText(LoginActivity.this, "Email hoặc mật khẩu sai", Toast.LENGTH_SHORT).show();

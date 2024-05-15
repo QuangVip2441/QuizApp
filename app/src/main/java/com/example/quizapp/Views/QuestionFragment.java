@@ -172,13 +172,10 @@ public class QuestionFragment extends Fragment {
         buttonPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getActivity().getSupportFragmentManager().popBackStack();
-//                if (mOrder >= 1) {
-//                    String selectedChoiceId = dbHelper.getSelectedChoiceId(questionId);
-//                    if (selectedChoiceId != null) {
-//
-//                    }
-//                }
+                if (mOrder >= 1) {
+                    getActivity().getSupportFragmentManager().popBackStack();
+                }else
+                    Toast.makeText(getActivity(),"Không có câu hỏi trước đó",Toast.LENGTH_LONG).show();
             }
         });
 

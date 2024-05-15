@@ -24,9 +24,28 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
 
     private OnItemClickListener mListener;
     private final int RESOURCE_ID;
+    private int Position;
     private ArrayList<QuestionModel> questionModels;
 
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        mListener = listener;
+    }
+    public int getPosition() {
+        return Position;
+    }
+
+    public void setPosition(int position) {
+        Position = position;
+    }
+
     public QuestionAdapter(int RESOURCE_ID, ArrayList<QuestionModel> questionModels) {
+        this.RESOURCE_ID = RESOURCE_ID;
+        this.questionModels = questionModels;
+    }
+
+    public QuestionAdapter(OnItemClickListener mListener, int RESOURCE_ID, ArrayList<QuestionModel> questionModels) {
+        this.mListener = mListener;
         this.RESOURCE_ID = RESOURCE_ID;
         this.questionModels = questionModels;
     }
@@ -50,14 +69,16 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
-                    mListener.onItemClick(questionModel.getId());
+                    int position = holder.getAdapterPosition();
+                    setPosition(position);
+                    mListener.onItemClick(questionModel.getId(), getPosition());
                 }
             }
         });
 
     }
     public interface OnItemClickListener {
-        void onItemClick(String questionId);
+        void onItemClick(String questionId, int position);
     }
 
     @Override
@@ -75,8 +96,9 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mListener != null){
-                        mListener.onItemClick(questionModels.get(getAdapterPosition()).getId());
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        mListener.onItemClick(questionModels.get(position).getId(), position);
                     }
                 }
             });

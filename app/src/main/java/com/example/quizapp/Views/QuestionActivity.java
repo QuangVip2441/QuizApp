@@ -69,6 +69,8 @@ public class QuestionActivity extends AppCompatActivity{
     private int trueCount = 0;
     private int TimeAllow = 30;
     private int timeAllowedInSeconds = 0;
+    private ArrayList<QuestionModel> mQuestions;
+    private String moduleID;
     private String userID;
     private FirebaseFirestore mFirestore;
     private CollectionReference mRefCollectionQuestions, mRefCollectionExam;
@@ -82,41 +84,42 @@ public class QuestionActivity extends AppCompatActivity{
         txtTimer = findViewById(R.id.txtTimer);
         recyclerNumberQuestion = findViewById(R.id.recyclerNumberQuestion);
 
+
         user = FirebaseAuth.getInstance().getCurrentUser();
         userID = user.getUid();
 
 
         Intent intent = getIntent();
-        String moduleID = intent.getStringExtra("Key");
+        moduleID = intent.getStringExtra("Key");
 
-        ArrayList<QuestionModel> mQuestions = new ArrayList<>();
+        mQuestions = new ArrayList<>();
         mFirestore = FirebaseFirestore.getInstance();
         // get time allowed
         mRefDocumentTestAdmin = mFirestore.collection(Constant.Database.TestAdministration.COLLECTION_TEST_ADMIN)
                 .document(moduleID);
-        mRefDocumentTestAdmin.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Map<String, Object> data = document.getData();
-                        TestAdministration testAdministration = new TestAdministration(
-                                (String) data.get(Constant.Database.TestAdministration.MODULEID),
-                                (String) data.get(Constant.Database.TestAdministration.TEST_NAME),
-                                (Long) data.get(Constant.Database.TestAdministration.TEST_GET_NUMBER_QUESTIONS),
-                                (int)(data.get(Constant.Database.TestAdministration.TIMEALLOWED))
-                        );
-                        //TimeAllow = testAdministration.getTimeAllowed();
-
-                    } else {
-                        Log.d(TAG,"document does not exist");
-                    }
-                } else {
-                    Log.d(TAG,"task is not successful");
-                }
-            }
-        });
+//        mRefDocumentTestAdmin.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                if (task.isSuccessful()) {
+//                    DocumentSnapshot document = task.getResult();
+//                    if (document.exists()) {
+//                        Map<String, Object> data = document.getData();
+//                        TestAdministration testAdministration = new TestAdministration(
+//                                (String) data.get(Constant.Database.TestAdministration.MODULEID),
+//                                (String) data.get(Constant.Database.TestAdministration.TEST_NAME),
+//                                (Long) data.get(Constant.Database.TestAdministration.TEST_GET_NUMBER_QUESTIONS),
+//                                (int)(data.get(Constant.Database.TestAdministration.TIMEALLOWED))
+//                        );
+//                        //TimeAllow = testAdministration.getTimeAllowed();
+//
+//                    } else {
+//                        Log.d(TAG,"document does not exist");
+//                    }
+//                } else {
+//                    Log.d(TAG,"task is not successful");
+//                }
+//            }
+//        });
         // Tạo thời gian bắt đầu
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
         String currentDateTime = dateFormat.format(new Date());
@@ -154,6 +157,7 @@ public class QuestionActivity extends AppCompatActivity{
             }
         });
 
+        // Thời gian cho phép với 30 phút
         timeAllowedInSeconds = TimeAllow * 60;
         // Tạo object và gán thời gian bắt đầu
         examModel = new ExamModel();
@@ -164,7 +168,6 @@ public class QuestionActivity extends AppCompatActivity{
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        // Thời gian cho phép với 30 phút
         startQuizTimer(currentTimeMillis, timeAllowedInSeconds);
         HashMap<String, Object> map = new HashMap<>();
         map.put(Constant.Database.Exam.STARTDATETIME, examModel.getStartDateTime());
@@ -228,6 +231,14 @@ public class QuestionActivity extends AppCompatActivity{
 
                             QuestionFragment questionFragment = new QuestionFragment(mQuestions, 0, moduleID, examModel);
                             FragmentUtils.replaceFragmentQuestion(getSupportFragmentManager(), questionFragment, true);
+
+                            questionAdapter.setOnItemClickListener(new QuestionAdapter.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(String questionId, int position) {
+                                    QuestionFragment questionFragment = new QuestionFragment(mQuestions, position, moduleID, examModel);
+                                    FragmentUtils.replaceFragmentQuestion(getSupportFragmentManager(), questionFragment, true);
+                                }
+                            });
                         }
                     }
                 });
