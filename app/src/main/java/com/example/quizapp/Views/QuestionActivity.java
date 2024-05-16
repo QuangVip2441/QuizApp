@@ -67,7 +67,7 @@ public class QuestionActivity extends AppCompatActivity{
     private TestAdministration administration;
     private FirebaseUser user;
     private int trueCount = 0;
-    private int TimeAllow = 30;
+    private int TimeAllow = 0;
     private int timeAllowedInSeconds = 0;
     private ArrayList<QuestionModel> mQuestions;
     private String moduleID;
@@ -97,57 +97,142 @@ public class QuestionActivity extends AppCompatActivity{
         // get time allowed
         mRefDocumentTestAdmin = mFirestore.collection(Constant.Database.TestAdministration.COLLECTION_TEST_ADMIN)
                 .document(moduleID);
-//        mRefDocumentTestAdmin.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                if (task.isSuccessful()) {
-//                    DocumentSnapshot document = task.getResult();
-//                    if (document.exists()) {
-//                        Map<String, Object> data = document.getData();
-//                        TestAdministration testAdministration = new TestAdministration(
-//                                (String) data.get(Constant.Database.TestAdministration.MODULEID),
-//                                (String) data.get(Constant.Database.TestAdministration.TEST_NAME),
-//                                (Long) data.get(Constant.Database.TestAdministration.TEST_GET_NUMBER_QUESTIONS),
-//                                (int)(data.get(Constant.Database.TestAdministration.TIMEALLOWED))
-//                        );
-//                        //TimeAllow = testAdministration.getTimeAllowed();
-//
-//                    } else {
-//                        Log.d(TAG,"document does not exist");
-//                    }
-//                } else {
-//                    Log.d(TAG,"task is not successful");
-//                }
-//            }
-//        });
-        // Tạo thời gian bắt đầu
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
-        String currentDateTime = dateFormat.format(new Date());
-        Date date = null;
-        try {
-            date = dateFormat.parse(currentDateTime);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        long currentTimeMillis = date.getTime();
-        // get module name
-        mRefDocumentModule = mFirestore
-                .collection(Constant.Database.Module.COLLECTION_MODULE).document(moduleID);
-        mRefDocumentModule.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        mRefDocumentTestAdmin.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         Map<String, Object> data = document.getData();
-                        ModuleModel module = new ModuleModel(
-                                (String) data.get(Constant.Database.Module.ID),
-                                (String) data.get(Constant.Database.Module.NAME),
-                                (String) data.get(Constant.Database.Module.INTRODUCTION),
-                                Long.parseLong(data.get(Constant.Database.Module.NUMBER_QUESTIONS).toString())
+                        TestAdministration testAdministration = new TestAdministration(
+                                (String) data.get(Constant.Database.TestAdministration.MODULEID),
+                                (String) data.get(Constant.Database.TestAdministration.TEST_NAME),
+                                (Long) data.get(Constant.Database.TestAdministration.TEST_GET_NUMBER_QUESTIONS),
+                                ((Long) data.get(Constant.Database.TestAdministration.TIMEALLOWED)).intValue()
                         );
-                        examModel.setModulename(module.getName());
+                        TimeAllow = testAdministration.getTimeAllowed();
+                        // Tạo thời gian bắt đầu
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
+                        String currentDateTime = dateFormat.format(new Date());
+                        Date date = null;
+                        try {
+                            date = dateFormat.parse(currentDateTime);
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
+                        long currentTimeMillis = date.getTime();
+                        // get module name
+                        mRefDocumentModule = mFirestore
+                                .collection(Constant.Database.Module.COLLECTION_MODULE).document(moduleID);
+                        mRefDocumentModule.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    DocumentSnapshot document = task.getResult();
+                                    if (document.exists()) {
+                                        Map<String, Object> data = document.getData();
+                                        ModuleModel module = new ModuleModel(
+                                                (String) data.get(Constant.Database.Module.ID),
+                                                (String) data.get(Constant.Database.Module.NAME),
+                                                (String) data.get(Constant.Database.Module.INTRODUCTION),
+                                                Long.parseLong(data.get(Constant.Database.Module.NUMBER_QUESTIONS).toString())
+                                        );
+                                        examModel.setModulename(module.getName());
 
+                                    } else {
+                                        Log.d(TAG,"document does not exist");
+                                    }
+                                } else {
+                                    Log.d(TAG,"task is not successful");
+                                }
+                            }
+                        });
+
+                        // Thời gian cho phép với 30 phút
+                        timeAllowedInSeconds = TimeAllow * 60;
+                        // Tạo object và gán thời gian bắt đầu
+                        examModel = new ExamModel();
+                        try {
+                            Date startDateTime = dateFormat.parse(currentDateTime);
+                            // Thiết lập startDateTime
+                            examModel.setStartDateTime(startDateTime);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        startQuizTimer(currentTimeMillis, timeAllowedInSeconds);
+                        HashMap<String, Object> map = new HashMap<>();
+                        map.put(Constant.Database.Exam.STARTDATETIME, examModel.getStartDateTime());
+
+
+                        mRefCollectionExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ).document(userID)
+                                .collection(Constant.Database.Exam.COLLECTION_EXAM);
+
+                        mRefCollectionExam.add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                            @Override
+                            public void onSuccess(DocumentReference documentReference) {
+                                String id = documentReference.getId();
+                                Map<String, Object> update = new HashMap<>();
+                                examModel.setId(id);
+                                update.put(Constant.Database.Exam.ID, id);
+                                mRefCollectionExam.document(id).update(update);
+                            }
+                        });
+
+                        mRefCollectionQuestions = mFirestore
+                                .collection(COLLECTION_MODULE)
+                                .document(moduleID)
+                                .collection(Constant.Database.Question.COLLECTION_QUESTIONS);
+
+                        mRefCollectionQuestions
+                                .get()
+                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            mQuestions.clear();
+                                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                                Map<String, Object> data = document.getData();
+                                                ArrayList<ChoiceModel> choices = new ArrayList<>();
+
+                                                ArrayList<HashMap<String, Object>> temp = (ArrayList<HashMap<String, Object>>) data.get(Constant.Database.Question.CHOICES);
+
+                                                for (HashMap<String, Object> i : temp) {
+                                                    choices.add(new ChoiceModel(
+                                                            (String) i.get(Constant.Database.Choice.ID),
+                                                            (String) i.get(Constant.Database.Choice.CONTENT)
+                                                    ));
+                                                }
+
+                                                QuestionModel question = new QuestionModel(
+                                                        (String) data.get(Constant.Database.Question.ID),
+                                                        (String) data.get(Constant.Database.Question.CONTENT),
+                                                        choices,
+                                                        (String) data.get(Constant.Database.Question.CORRECT)
+                                                );
+
+                                                mQuestions.add(question);
+
+                                            }
+                                            Collections.shuffle(mQuestions);
+                                            // add questions
+                                            questionAdapter = new QuestionAdapter(R.layout.layout_item_header_number_question, mQuestions);
+                                            LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
+                                            recyclerNumberQuestion.setLayoutManager(layoutManager);
+                                            recyclerNumberQuestion.setAdapter(questionAdapter);
+
+                                            QuestionFragment questionFragment = new QuestionFragment(mQuestions, 0, moduleID, examModel);
+                                            FragmentUtils.replaceFragmentQuestion(getSupportFragmentManager(), questionFragment, true);
+
+                                            questionAdapter.setOnItemClickListener(new QuestionAdapter.OnItemClickListener() {
+                                                @Override
+                                                public void onItemClick(String questionId, int position) {
+                                                    QuestionFragment questionFragment = new QuestionFragment(mQuestions, position, moduleID, examModel);
+                                                    FragmentUtils.replaceFragmentQuestion(getSupportFragmentManager(), questionFragment, true);
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
                     } else {
                         Log.d(TAG,"document does not exist");
                     }
@@ -156,92 +241,6 @@ public class QuestionActivity extends AppCompatActivity{
                 }
             }
         });
-
-        // Thời gian cho phép với 30 phút
-        timeAllowedInSeconds = TimeAllow * 60;
-        // Tạo object và gán thời gian bắt đầu
-        examModel = new ExamModel();
-        try {
-            Date startDateTime = dateFormat.parse(currentDateTime);
-            // Thiết lập startDateTime
-            examModel.setStartDateTime(startDateTime);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        startQuizTimer(currentTimeMillis, timeAllowedInSeconds);
-        HashMap<String, Object> map = new HashMap<>();
-        map.put(Constant.Database.Exam.STARTDATETIME, examModel.getStartDateTime());
-
-
-        mRefCollectionExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ).document(userID)
-                .collection(Constant.Database.Exam.COLLECTION_EXAM);
-
-        mRefCollectionExam.add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-            @Override
-            public void onSuccess(DocumentReference documentReference) {
-                String id = documentReference.getId();
-                Map<String, Object> update = new HashMap<>();
-                examModel.setId(id);
-                update.put(Constant.Database.Exam.ID, id);
-                mRefCollectionExam.document(id).update(update);
-            }
-        });
-
-        mRefCollectionQuestions = mFirestore
-                .collection(COLLECTION_MODULE)
-                .document(moduleID)
-                .collection(Constant.Database.Question.COLLECTION_QUESTIONS);
-
-        mRefCollectionQuestions
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            mQuestions.clear();
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                Map<String, Object> data = document.getData();
-                                ArrayList<ChoiceModel> choices = new ArrayList<>();
-
-                                ArrayList<HashMap<String, Object>> temp = (ArrayList<HashMap<String, Object>>) data.get(Constant.Database.Question.CHOICES);
-
-                                for (HashMap<String, Object> i : temp) {
-                                    choices.add(new ChoiceModel(
-                                            (String) i.get(Constant.Database.Choice.ID),
-                                            (String) i.get(Constant.Database.Choice.CONTENT)
-                                    ));
-                                }
-
-                                QuestionModel question = new QuestionModel(
-                                        (String) data.get(Constant.Database.Question.ID),
-                                        (String) data.get(Constant.Database.Question.CONTENT),
-                                        choices,
-                                        (String) data.get(Constant.Database.Question.CORRECT)
-                                );
-
-                                mQuestions.add(question);
-
-                            }
-                            Collections.shuffle(mQuestions);
-                            // add questions
-                            questionAdapter = new QuestionAdapter(R.layout.layout_item_header_number_question, mQuestions);
-                            LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
-                            recyclerNumberQuestion.setLayoutManager(layoutManager);
-                            recyclerNumberQuestion.setAdapter(questionAdapter);
-
-                            QuestionFragment questionFragment = new QuestionFragment(mQuestions, 0, moduleID, examModel);
-                            FragmentUtils.replaceFragmentQuestion(getSupportFragmentManager(), questionFragment, true);
-
-                            questionAdapter.setOnItemClickListener(new QuestionAdapter.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(String questionId, int position) {
-                                    QuestionFragment questionFragment = new QuestionFragment(mQuestions, position, moduleID, examModel);
-                                    FragmentUtils.replaceFragmentQuestion(getSupportFragmentManager(), questionFragment, true);
-                                }
-                            });
-                        }
-                    }
-                });
 
     }
 
