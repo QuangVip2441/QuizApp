@@ -26,6 +26,7 @@ import com.example.quizapp.Models.QuizModel;
 import com.example.quizapp.R;
 import com.example.quizapp.adapters.McqRvAdapter;
 import com.example.quizapp.ultils.Constant;
+import com.example.quizapp.ultils.DatabaseHelper;
 import com.example.quizapp.ultils.FragmentUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -62,6 +63,7 @@ public class QuestionFragment extends Fragment {
     private Date startDateTime;
     private int mOrder;
     private String mSelectedModuleID;
+    private DatabaseHelper dbHelper;
     private String questionId;
     private int trueCount = 0;
     private McqRvAdapter mcqRVAdapter;
@@ -70,6 +72,7 @@ public class QuestionFragment extends Fragment {
     private FirebaseUser user;
     private String userID;
     private DocumentReference mRefDocumentExam;
+
 
     public QuestionFragment() {
         this.quiz = new ArrayList<QuizModel>(); // Initialize the ArrayList
@@ -91,7 +94,9 @@ public class QuestionFragment extends Fragment {
         this.quiz = new ArrayList<QuizModel>(); // Initialize the ArrayList
     }
 
-
+    public QuestionFragment(DatabaseHelper dbHelper) {
+        this.dbHelper = dbHelper;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -114,7 +119,7 @@ public class QuestionFragment extends Fragment {
         user = FirebaseAuth.getInstance().getCurrentUser();
         userID = user.getUid();
         mFirestore = FirebaseFirestore.getInstance();
-
+        dbHelper = new DatabaseHelper(getContext());
 
         if (NewexamModel != null) {
              startDateTime = NewexamModel.getStartDateTime();
@@ -132,6 +137,7 @@ public class QuestionFragment extends Fragment {
                     String selectId = selectedChoice.getId();
                     String current = currentQuestion.getCorrect();
 
+
                     if (mQuestions != null && mOrder >= 0 && mOrder < mQuestions.size()) {
                         if (selectId.equals(current)) {
                             quiz.add(new QuizModel(mQuestions.get(mOrder).getId(), mQuestions.get(mOrder).getContent(), selectId, current, true));
@@ -141,6 +147,8 @@ public class QuestionFragment extends Fragment {
                             NewexamModel.setQuizs(quiz);
                         }
                         NewexamModel.setState("Đang làm bài");
+
+                        saveUserAnswerToDatabase(mQuestions.get(mOrder).getId(),selectId, selectedPosition);
                     }
                     HashMap<String, Object> map = new HashMap<>();
                     map.put(Constant.Database.Exam.QUESTION, NewexamModel.getQuizs());
@@ -169,6 +177,8 @@ public class QuestionFragment extends Fragment {
             }
         });
 
+
+
         buttonPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -185,6 +195,13 @@ public class QuestionFragment extends Fragment {
         return view;
     }
 
+    private void saveUserAnswerToDatabase(String questionid, String answerid, int position) {
+        String questionId = questionid;
+        String answerId = answerid;
+
+        // Gọi phương thức addUserAnswer() từ DatabaseHelper để lưu câu trả lời vào cơ sở dữ liệu
+        dbHelper.addUserAnswer(questionId, answerId, position);
+    }
     private void loadData(View view) {
         if (mQuestions != null) {
             showQuestion(view);
@@ -195,20 +212,22 @@ public class QuestionFragment extends Fragment {
         if (mOrder < mQuestions.size()) {
             QuestionModel question = mQuestions.get(mOrder);
             textContent.setText(mQuestions.get(mOrder).getContent());
-            questionId = question.getId();
 
             mcqRVAdapter = new McqRvAdapter(
                     R.layout.layout_item_answer,
-                    mQuestions.get(mOrder).getChoices()
+                    mQuestions.get(mOrder).getChoices(),
+                    dbHelper
             );
 
+            ArrayList<String> savedPositions = dbHelper.getUserAnswersForQuestion(question.getId());
+            mcqRVAdapter.setSavedAnswers(savedPositions);
 
             LinearLayoutManager layoutManager = new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false);
             recyclerChoices.setLayoutManager(layoutManager);
             recyclerChoices.setAdapter(mcqRVAdapter);
+
         }
     }
-
 
     public void finishQuiz() {
         mRefDocumentExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ)

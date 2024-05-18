@@ -29,6 +29,7 @@ import com.example.quizapp.R;
 import com.example.quizapp.adapters.ModuleSpinnerAdapter;
 import com.example.quizapp.adapters.QuestionAdapter;
 import com.example.quizapp.ultils.Constant;
+import com.example.quizapp.ultils.DatabaseHelper;
 import com.example.quizapp.ultils.FragmentUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -73,6 +74,7 @@ public class QuestionActivity extends AppCompatActivity{
     private String moduleID;
     private String userID;
     private FirebaseFirestore mFirestore;
+    private DatabaseHelper dbHelper;
     private CollectionReference mRefCollectionQuestions, mRefCollectionExam;
     private DocumentReference mRefDocumentExam, mRefDocumentModule, mRefDocumentTestAdmin;
 
@@ -84,6 +86,7 @@ public class QuestionActivity extends AppCompatActivity{
         txtTimer = findViewById(R.id.txtTimer);
         recyclerNumberQuestion = findViewById(R.id.recyclerNumberQuestion);
 
+        dbHelper = new DatabaseHelper(this);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         userID = user.getUid();
@@ -190,6 +193,7 @@ public class QuestionActivity extends AppCompatActivity{
                                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                         if (task.isSuccessful()) {
                                             mQuestions.clear();
+                                            dbHelper.resetDatabase();
                                             for (QueryDocumentSnapshot document : task.getResult()) {
                                                 Map<String, Object> data = document.getData();
                                                 ArrayList<ChoiceModel> choices = new ArrayList<>();
