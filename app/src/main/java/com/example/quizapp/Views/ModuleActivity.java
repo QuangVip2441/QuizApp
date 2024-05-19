@@ -1,7 +1,10 @@
 package com.example.quizapp.Views;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.appcompat.widget.Toolbar;
+
+import android.view.MenuItem;
+
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,6 +25,13 @@ public class ModuleActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_module);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         ArrayList<ModuleModel> models = new ArrayList<>();
         models.add(new ModuleModel("gH0DPmPCXqyd2tLvNFo2","IU01","Hiểu biết về CNTT cơ bản",50));
         models.add(new ModuleModel("nhzkAlsrBsEYuMwLt4tX","IU02","Sử dụng máy tính cơ bản",50));
@@ -54,5 +64,15 @@ public class ModuleActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            // Kết thúc Activity hiện tại và trở về Activity trước đó
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

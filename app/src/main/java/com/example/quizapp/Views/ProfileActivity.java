@@ -2,9 +2,8 @@ package com.example.quizapp.Views;
 
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
-import static com.example.quizapp.ultils.Constant.Database.Module.COLLECTION_MODULE;
 import static com.example.quizapp.ultils.Constant.Database.User.COLLECTION_USER;
-import static com.example.quizapp.ultils.Constant.Database.User.ID;
+import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -79,6 +78,10 @@ public class ProfileActivity extends AppCompatActivity {
         imageAvt = findViewById(R.id.imageAvt);
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         userID = user.getUid();
@@ -155,4 +158,15 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            // Kết thúc Activity hiện tại và trở về Activity trước đó
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 }

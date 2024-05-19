@@ -64,6 +64,7 @@ public class Constant {
             public static final String MODULEID = "moduleid";
             public static final String TIMEALLOWED = "timeAllowed";
             public static final String TEST_NAME = "test_name";
+            public static final String NUMBERQUESTION = "numberquestion";
             public static final String TEST_GET_NUMBER_QUESTIONS = "test_get_numberQuestions";
         }
 

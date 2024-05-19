@@ -16,9 +16,6 @@
             android:name=".Views.StartActivity"
             android:exported="false" />
         <activity
-            android:name=".Views.EditPasswordActivity"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
             android:exported="false" />
         <activity
@@ -31,20 +28,41 @@
             android:name=".Views.AddTestAdministrationActivity"
             android:exported="false" />
         <activity
-            android:name=".Views.ModuleActivity"
-            android:exported="false" />
-        <activity
             android:name=".Views.QuestionActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Views.EditProfileActivity"
             android:exported="false" />
         <activity
             android:name=".Views.UpLoadImageProfileActivity"
             android:exported="false" />
         <activity
+            android:name=".Views.ModuleActivity"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity
+            android:name=".Views.EditPasswordActivity"
+            android:parentActivityName=".Views.ProfileActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Views.ProfileActivity" />
+        </activity>
+        <activity
+            android:name=".Views.EditProfileActivity"
+            android:parentActivityName=".Views.ProfileActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Views.ProfileActivity" />
+        </activity>
+
+        <activity
             android:name=".Views.ProfileActivity"
-            android:exported="false" />
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
         <activity
             android:name=".Views.LoginActivity"
             android:exported="true">

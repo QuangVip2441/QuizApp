@@ -1,6 +1,7 @@
 package com.example.quizapp.Views;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -13,13 +14,21 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.quizapp.R;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 public class HomeFragment extends Fragment {
 
     private TextView hiddenContent, txtNameApp;
     private ImageButton btnToggle;
-    private ShapeableImageView imgTestModule;
+    private ShapeableImageView imgTestModule, imageAvatar;
+    private FirebaseUser user;
+    private String userID = "";
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -29,7 +38,22 @@ public class HomeFragment extends Fragment {
         hiddenContent = view.findViewById(R.id.hiddenContent);
         txtNameApp = view.findViewById(R.id.txtNameApp);
         imgTestModule = view.findViewById(R.id.imgTestModule);
+        imageAvatar = view.findViewById(R.id.imageAvatar);
 
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        userID = user.getUid();
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageReference = storage.getReference("images").child(userID);
+
+        storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Picasso.get()
+                        .load(uri)
+                        .into(imageAvatar);
+            }
+        });
         btnToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

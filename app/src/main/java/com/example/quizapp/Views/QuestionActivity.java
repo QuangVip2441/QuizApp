@@ -108,9 +108,6 @@ public class QuestionActivity extends AppCompatActivity{
                     if (document.exists()) {
                         Map<String, Object> data = document.getData();
                         TestAdministration testAdministration = new TestAdministration(
-                                (String) data.get(Constant.Database.TestAdministration.MODULEID),
-                                (String) data.get(Constant.Database.TestAdministration.TEST_NAME),
-                                (Long) data.get(Constant.Database.TestAdministration.TEST_GET_NUMBER_QUESTIONS),
                                 ((Long) data.get(Constant.Database.TestAdministration.TIMEALLOWED)).intValue()
                         );
                         TimeAllow = testAdministration.getTimeAllowed();
