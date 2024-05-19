@@ -6,7 +6,7 @@ import java.util.Date;
 public class ExamModel {
     private String id;
     private ArrayList<QuizModel> quizs ;
-    private String modulename;
+    private String testname;
     private String durationInMinutes;//
     private Date startDateTime;
     private Date endDateTime;//
@@ -17,10 +17,11 @@ public class ExamModel {
     public ExamModel() {
     }
 
-    public ExamModel(String id, ArrayList<QuizModel> quizs, String modulename, String durationInMinutes, Date startDateTime, Date endDateTime, String state, int marks) {
+
+    public ExamModel(String id, ArrayList<QuizModel> quizs, String testname, String durationInMinutes, Date startDateTime, Date endDateTime, String state, int marks) {
         this.id = id;
         this.quizs = quizs;
-        this.modulename = modulename;
+        this.testname = testname;
         this.durationInMinutes = durationInMinutes;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
@@ -28,9 +29,9 @@ public class ExamModel {
         this.marks = marks;
     }
 
-    public ExamModel(ArrayList<QuizModel> quizs, String modulename, String durationInMinutes, Date startDateTime, Date endDateTime, String state, int marks) {
+    public ExamModel(ArrayList<QuizModel> quizs, String testname, String durationInMinutes, Date startDateTime, Date endDateTime, String state, int marks) {
         this.quizs = quizs;
-        this.modulename = modulename;
+        this.testname = testname;
         this.durationInMinutes = durationInMinutes;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
@@ -54,12 +55,12 @@ public class ExamModel {
         this.quizs = quizs;
     }
 
-    public String getModulename() {
-        return modulename;
+    public String getTestname() {
+        return testname;
     }
 
-    public void setModulename(String modulename) {
-        this.modulename = modulename;
+    public void setTestname(String testname) {
+        this.testname = testname;
     }
 
     public String getDurationInMinutes() {

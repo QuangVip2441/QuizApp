@@ -24,36 +24,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Câu"
+                android:text="Câu hỏi:"
                 android:textSize="25sp"
                 android:textStyle="bold"
                 />
-
-            <TextView
-                android:id="@+id/txtRandomNumderQuestion"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="1"
-                android:textSize="25sp"
-                android:textStyle="bold"
-                android:layout_marginLeft="10dp"
-                />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="/"
-                android:textSize="25sp"
-                android:textStyle="bold"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"/>
-            <TextView
-                android:id="@+id/txtRandomTotalQuestion"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="50"
-                android:textSize="25sp"
-                android:textStyle="bold"
-                android:layout_marginLeft="2dp"/>
 
             <ImageView
                 android:layout_width="18dp"
@@ -64,7 +38,7 @@
                 />
 
             <TextView
-                android:id="@+id/txtRandomTimer"
+                android:id="@+id/txtTimer"
                 android:layout_width="wrap_content"
                 android:layout_height="34dp"
                 android:layout_marginLeft="4dp"
@@ -74,16 +48,17 @@
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/RandomrecyclerNumberQuestion"
+            android:id="@+id/recyclerNumberQuestion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/topview"
             android:layout_weight="1"
             />
+
     </LinearLayout>
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragment_Random_Question"
+        android:id="@+id/fragment_question"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/topLinearLayout"/>

@@ -20,7 +20,7 @@ public class Constant {
         // Từng bài thi
         public static class Exam{
             public static final String ID = "id";
-            public static final String MODULENAME = "module_name";
+            public static final String TEST_NAME = "test_name";
             public static final String COLLECTION_EXAM = "exam";
             public static final String STARTDATETIME = "start_timer";
             public static final String ENDDATETIME = "end_timer";

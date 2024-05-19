@@ -108,6 +108,7 @@ public class QuestionActivity extends AppCompatActivity{
                     if (document.exists()) {
                         Map<String, Object> data = document.getData();
                         TestAdministration testAdministration = new TestAdministration(
+                                ((String) data.get(Constant.Database.TestAdministration.TEST_NAME)),
                                 ((Long) data.get(Constant.Database.TestAdministration.TIMEALLOWED)).intValue()
                         );
                         TimeAllow = testAdministration.getTimeAllowed();
@@ -137,7 +138,7 @@ public class QuestionActivity extends AppCompatActivity{
                                                 (String) data.get(Constant.Database.Module.INTRODUCTION),
                                                 Long.parseLong(data.get(Constant.Database.Module.NUMBER_QUESTIONS).toString())
                                         );
-                                        examModel.setModulename(module.getName());
+                                        examModel.setTestname(module.getName());
 
                                     } else {
                                         Log.d(TAG,"document does not exist");
@@ -306,7 +307,7 @@ public class QuestionActivity extends AppCompatActivity{
                     map.put(Constant.Database.Exam.DURATION_IN_MINUTES, examModel.getDurationInMinutes());
                     map.put(Constant.Database.Exam.MARKS, examModel.getMarks());
                     map.put(Constant.Database.Exam.STATE, examModel.getState());
-                    map.put(Constant.Database.Exam.MODULENAME, examModel.getModulename());
+                    map.put(Constant.Database.Exam.TEST_NAME, examModel.getTestname());
 
                     mRefDocumentExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ)
                             .document(userID).collection(Constant.Database.Exam.COLLECTION_EXAM)

@@ -27,14 +27,14 @@ public class AddTestAdministrationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_test_administration);
         mFirestore = FirebaseFirestore.getInstance();
 
-        addTestAdmin("gH0DPmPCXqyd2tLvNFo2","IU01", 10, 30, 50);
-        addTestAdmin("nhzkAlsrBsEYuMwLt4tX","IU02", 10, 30, 50);
-        addTestAdmin("tKY7UM75QxiaEso7cg1P","IU03", 10, 30, 50);
-        addTestAdmin("RIcs3Vkbw67snMZDrQph","IU04", 10, 30, 50);
-        addTestAdmin("kVXcvqNDESn0XcGFZOwJ","IU05", 5, 30, 50);
-        addTestAdmin("yPcUWum0mjuL7mld9Yhy","IU06", 5, 30, 50);
+//        addTestAdmin("gH0DPmPCXqyd2tLvNFo2","IU01", 10, 30, 50);
+//        addTestAdmin("nhzkAlsrBsEYuMwLt4tX","IU02", 10, 30, 50);
+//        addTestAdmin("tKY7UM75QxiaEso7cg1P","IU03", 10, 30, 50);
+//        addTestAdmin("RIcs3Vkbw67snMZDrQph","IU04", 10, 30, 50);
+//        addTestAdmin("kVXcvqNDESn0XcGFZOwJ","IU05", 5, 30, 50);
+//        addTestAdmin("yPcUWum0mjuL7mld9Yhy","IU06", 5, 30, 50);
         //addTestAdmin("","Sum Test", 50, 30);
-        addTestAdminRandomTest("SumTest",50,30, 50);
+        addTestAdmin("ZayqBjRnPr1GXBoyPdOh","SumTest",50,30, 50);
 
 
     }

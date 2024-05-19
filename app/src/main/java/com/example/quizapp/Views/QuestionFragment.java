@@ -78,6 +78,20 @@ public class QuestionFragment extends Fragment {
         this.quiz = new ArrayList<QuizModel>(); // Initialize the ArrayList
     }
 
+    public QuestionFragment(ArrayList<QuestionModel> mQuestions, int mOrder, ExamModel examModel, ArrayList<QuizModel> quiz) {
+        this.mQuestions = mQuestions;
+        this.mOrder = mOrder;
+        this.NewexamModel = examModel;
+        this.quiz = quiz;
+    }
+
+    public QuestionFragment(ArrayList<QuestionModel> mQuestions, int mOrder, ExamModel examModel) {
+        this.mQuestions = mQuestions;
+        this.mOrder = mOrder;
+        this.NewexamModel = examModel;
+        this.quiz = new ArrayList<QuizModel>(); // Initialize the ArrayList
+    }
+
     public QuestionFragment(ArrayList<QuestionModel> mQuestions, int mOrder, String mSelectedModuleID, ExamModel examModel, ArrayList<QuizModel> quiz) {
         this.mQuestions = mQuestions;
         this.mOrder = mOrder;
@@ -165,7 +179,7 @@ public class QuestionFragment extends Fragment {
                     });
 
                     if (mOrder < mQuestions.size() - 1) {
-                        QuestionFragment nextFragment = new QuestionFragment(mQuestions, mOrder + 1, mSelectedModuleID, NewexamModel, quiz);
+                        QuestionFragment nextFragment = new QuestionFragment(mQuestions, mOrder + 1, NewexamModel, quiz);
                         FragmentUtils.replaceFragmentQuestion(
                                 getActivity().getSupportFragmentManager(),
                                 nextFragment,
@@ -290,7 +304,7 @@ public class QuestionFragment extends Fragment {
                     map.put(Constant.Database.Exam.DURATION_IN_MINUTES, NewexamModel.getDurationInMinutes());
                     map.put(Constant.Database.Exam.MARKS, NewexamModel.getMarks());
                     map.put(Constant.Database.Exam.STATE, NewexamModel.getState());
-                    map.put(Constant.Database.Exam.MODULENAME, NewexamModel.getModulename());
+                    map.put(Constant.Database.Exam.TEST_NAME, NewexamModel.getTestname());
 
                     mRefDocumentExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ)
                             .document(userID).collection(Constant.Database.Exam.COLLECTION_EXAM)
