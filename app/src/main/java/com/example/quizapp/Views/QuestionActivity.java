@@ -5,16 +5,12 @@ import static com.example.quizapp.ultils.Constant.Database.Module.COLLECTION_MOD
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Parcelable;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -26,13 +22,11 @@ import com.example.quizapp.Models.QuestionModel;
 import com.example.quizapp.Models.QuizModel;
 import com.example.quizapp.Models.TestAdministration;
 import com.example.quizapp.R;
-import com.example.quizapp.adapters.ModuleSpinnerAdapter;
 import com.example.quizapp.adapters.QuestionAdapter;
 import com.example.quizapp.ultils.Constant;
 import com.example.quizapp.ultils.DatabaseHelper;
 import com.example.quizapp.ultils.FragmentUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -41,11 +35,8 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-
-import org.checkerframework.checker.units.qual.C;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -60,7 +51,7 @@ import java.util.concurrent.TimeUnit;
 
 public class QuestionActivity extends AppCompatActivity{
 
-    private TextView txtTimer;
+    private TextView txtTimer, txtnumberquestion;
     private CountDownTimer countDownTimer;
     private RecyclerView recyclerNumberQuestion;
     private QuestionAdapter questionAdapter;
@@ -69,8 +60,10 @@ public class QuestionActivity extends AppCompatActivity{
     private FirebaseUser user;
     private int trueCount = 0;
     private int TimeAllow = 0;
+    private int numberOfQuestions = 0;
     private int timeAllowedInSeconds = 0;
     private ArrayList<QuestionModel> mQuestions;
+    private ArrayList<QuestionModel> Questions;
     private String moduleID;
     private String userID;
     private FirebaseFirestore mFirestore;
@@ -79,11 +72,13 @@ public class QuestionActivity extends AppCompatActivity{
     private DocumentReference mRefDocumentExam, mRefDocumentModule, mRefDocumentTestAdmin;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question);
         txtTimer = findViewById(R.id.txtTimer);
+        txtnumberquestion = findViewById(R.id.txtnumberquestion);
         recyclerNumberQuestion = findViewById(R.id.recyclerNumberQuestion);
 
         dbHelper = new DatabaseHelper(this);
@@ -96,6 +91,9 @@ public class QuestionActivity extends AppCompatActivity{
         moduleID = intent.getStringExtra("Key");
 
         mQuestions = new ArrayList<>();
+        Questions = new ArrayList<>();
+
+
         mFirestore = FirebaseFirestore.getInstance();
         // get time allowed
         mRefDocumentTestAdmin = mFirestore.collection(Constant.Database.TestAdministration.COLLECTION_TEST_ADMIN)
@@ -109,9 +107,11 @@ public class QuestionActivity extends AppCompatActivity{
                         Map<String, Object> data = document.getData();
                         TestAdministration testAdministration = new TestAdministration(
                                 ((String) data.get(Constant.Database.TestAdministration.TEST_NAME)),
+                                ((Long) data.get(Constant.Database.TestAdministration.NUMBERQUESTION)).intValue(),
                                 ((Long) data.get(Constant.Database.TestAdministration.TIMEALLOWED)).intValue()
                         );
                         TimeAllow = testAdministration.getTimeAllowed();
+                        numberOfQuestions = testAdministration.getNumberquestion();
                         // Tạo thời gian bắt đầu
                         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
                         String currentDateTime = dateFormat.format(new Date());
@@ -191,7 +191,7 @@ public class QuestionActivity extends AppCompatActivity{
                                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                         if (task.isSuccessful()) {
                                             mQuestions.clear();
-                                            dbHelper.resetDatabase();
+                                            dbHelper.resetData();
                                             for (QueryDocumentSnapshot document : task.getResult()) {
                                                 Map<String, Object> data = document.getData();
                                                 ArrayList<ChoiceModel> choices = new ArrayList<>();
@@ -215,20 +215,22 @@ public class QuestionActivity extends AppCompatActivity{
                                                 mQuestions.add(question);
 
                                             }
-                                            Collections.shuffle(mQuestions);
+                                            Questions.addAll(getRandomQuestions(mQuestions,numberOfQuestions));
+
+
                                             // add questions
-                                            questionAdapter = new QuestionAdapter(R.layout.layout_item_header_number_question, mQuestions);
+                                            questionAdapter = new QuestionAdapter(R.layout.layout_item_header_number_question, Questions);
                                             LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
                                             recyclerNumberQuestion.setLayoutManager(layoutManager);
                                             recyclerNumberQuestion.setAdapter(questionAdapter);
 
-                                            QuestionFragment questionFragment = new QuestionFragment(mQuestions, 0, moduleID, examModel);
+                                            QuestionFragment questionFragment = new QuestionFragment(Questions, 0, moduleID, examModel);
                                             FragmentUtils.replaceFragmentQuestion(getSupportFragmentManager(), questionFragment, true);
 
                                             questionAdapter.setOnItemClickListener(new QuestionAdapter.OnItemClickListener() {
                                                 @Override
                                                 public void onItemClick(String questionId, int position) {
-                                                    QuestionFragment questionFragment = new QuestionFragment(mQuestions, position, moduleID, examModel);
+                                                    QuestionFragment questionFragment = new QuestionFragment(Questions, position, moduleID, examModel);
                                                     FragmentUtils.replaceFragmentQuestion(getSupportFragmentManager(), questionFragment, true);
                                                 }
                                             });
@@ -244,6 +246,14 @@ public class QuestionActivity extends AppCompatActivity{
             }
         });
 
+    }
+    private ArrayList<QuestionModel> getRandomQuestions(ArrayList<QuestionModel> questionList, int numberOfQuestions) {
+        ArrayList<QuestionModel> randomQuestions = new ArrayList<>();
+        Collections.shuffle(questionList); // Trộn ngẫu nhiên danh sách câu hỏi
+        for (int i = 0; i < Math.min(numberOfQuestions, questionList.size()); i++) {
+            randomQuestions.add(questionList.get(i));
+        }
+        return randomQuestions;
     }
 
     public void finishQuiz() {

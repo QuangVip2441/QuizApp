@@ -28,8 +28,14 @@
                 android:layout_height="wrap_content"
                 android:text="Câu hỏi:"
                 android:textSize="25sp"
-                android:textStyle="bold"
-                />
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtnumberquestion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="25sp"
+                android:textStyle="bold" />
 
             <ImageView
                 android:layout_width="18dp"

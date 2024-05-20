@@ -35,6 +35,12 @@ public class TestAdministration {
         this.timeAllowed = timeAllowed;
     }
 
+    public TestAdministration(String test_name, int numberquestion, int timeAllowed) {
+        this.test_name = test_name;
+        this.numberquestion = numberquestion;
+        this.timeAllowed = timeAllowed;
+    }
+
     public String getId() {
         return id;
     }

@@ -22,43 +22,24 @@ import java.util.Map;
 
 public class McqRvAdapter extends RecyclerView.Adapter<McqRvAdapter.ViewHolder> {
 
-    private List<String> savedPositions;
-    private ArrayList<String> savedAnswers;
+
+
     private final int RESOURCE_ID;
     private ArrayList<ChoiceModel> mChoices;
-    private int mSelectedItem = -1;
-    private DatabaseHelper dbHelper;
+    private int selectedChoiceIndex= -1;
+    private int mOrder;
+    private int response;
+    private ArrayList<Integer> mPositions;
 
 
 
-    public void setSavedAnswers(ArrayList<String> savedAnswers) {
-        this.savedAnswers = savedAnswers;
-        notifyDataSetChanged();
-    }
-
-    public void setSelectedItem(int position) {
-        // If the clicked item is already selected, deselect it
-        if (mSelectedItem == position) {
-            mSelectedItem = -1; // Deselect the item
-        } else {
-            mSelectedItem = position; // Otherwise, select the clicked item
-        }
-        notifyDataSetChanged(); // Notify the adapter that data has changed
-    }
-
-
-    public McqRvAdapter(int RESOURCE_ID, ArrayList<ChoiceModel> mChoices, DatabaseHelper dbHelper) {
+    public McqRvAdapter(int RESOURCE_ID, ArrayList<ChoiceModel> mChoices, int mOrder, int response) {
         this.RESOURCE_ID = RESOURCE_ID;
         this.mChoices = mChoices;
-        this.dbHelper = dbHelper;
-        this.savedAnswers = new ArrayList<>();
+        this.mOrder = mOrder;
+        this.response = response;
     }
 
-    public McqRvAdapter(int RESOURCE_ID, ArrayList<ChoiceModel> mChoices) {
-        this.RESOURCE_ID = RESOURCE_ID;
-        this.mChoices = mChoices;
-        this.savedAnswers = new ArrayList<>();
-    }
 
     @NonNull
     @Override
@@ -74,16 +55,21 @@ public class McqRvAdapter extends RecyclerView.Adapter<McqRvAdapter.ViewHolder> 
         ChoiceModel choice = mChoices.get(holder.getAdapterPosition());
         holder.textAnswer.setText(choice.getAnswer());
 
-        if (savedAnswers.contains(choice.getId()))
-            holder.radioAnswer.setChecked(savedAnswers.contains(choice.getId()));
-        else
-            holder.radioAnswer.setChecked(holder.getAdapterPosition() == mSelectedItem);
+
+        // Kiểm tra nếu vị trí hiện tại đã được chọn trước đó
+        if (holder.getAdapterPosition() == response) {
+            holder.radioAnswer.setChecked(true);
+        } else {
+            holder.radioAnswer.setChecked(false);
+        }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mSelectedItem = holder.getAdapterPosition();
+                response = holder.getAdapterPosition();
+                selectedChoiceIndex = response;
                 notifyDataSetChanged();
+
 
             }
         });
@@ -91,18 +77,25 @@ public class McqRvAdapter extends RecyclerView.Adapter<McqRvAdapter.ViewHolder> 
         holder.radioAnswer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mSelectedItem = holder.getAdapterPosition();
+                response = holder.getAdapterPosition();
+                selectedChoiceIndex = response;
                 notifyDataSetChanged();
             }
         });
     }
 
+
     @Override
     public int getItemCount() {
         return mChoices.size();
     }
-    public int getSelectedItem() {
-        return mSelectedItem;
+
+    public int getSelectedChoiceIndex() {
+        return selectedChoiceIndex;
+    }
+
+    public void setSelectedChoiceIndex(int selectedChoiceIndex) {
+        this.selectedChoiceIndex = selectedChoiceIndex;
     }
 
 

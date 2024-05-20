@@ -52,18 +52,18 @@ import java.util.concurrent.TimeUnit;
 
 public class QuestionFragment extends Fragment {
 
-    private TextView textContent;
+    private TextView textContent, textQuestionNumberInline;
     private RecyclerView recyclerChoices;
     private MaterialButton buttonPrevious;
     private MaterialButton buttonNext;
     private ContentLoadingProgressBar progressBar;
     private ArrayList<QuestionModel> mQuestions;
     private ArrayList<QuizModel> quiz;
+    private ArrayList<Integer> mPositions;
     private ExamModel NewexamModel;
     private Date startDateTime;
     private int mOrder;
     private String mSelectedModuleID;
-    private DatabaseHelper dbHelper;
     private String questionId;
     private int trueCount = 0;
     private McqRvAdapter mcqRVAdapter;
@@ -72,17 +72,19 @@ public class QuestionFragment extends Fragment {
     private FirebaseUser user;
     private String userID;
     private DocumentReference mRefDocumentExam;
+    private int response;
 
 
     public QuestionFragment() {
         this.quiz = new ArrayList<QuizModel>(); // Initialize the ArrayList
     }
 
-    public QuestionFragment(ArrayList<QuestionModel> mQuestions, int mOrder, ExamModel examModel, ArrayList<QuizModel> quiz) {
+    public QuestionFragment(ArrayList<QuestionModel> mQuestions, int mOrder, ExamModel examModel, ArrayList<QuizModel> quiz, ArrayList<Integer> mPositions) {
         this.mQuestions = mQuestions;
         this.mOrder = mOrder;
         this.NewexamModel = examModel;
         this.quiz = quiz;
+        this.mPositions = mPositions;
     }
 
     public QuestionFragment(ArrayList<QuestionModel> mQuestions, int mOrder, ExamModel examModel) {
@@ -90,6 +92,7 @@ public class QuestionFragment extends Fragment {
         this.mOrder = mOrder;
         this.NewexamModel = examModel;
         this.quiz = new ArrayList<QuizModel>(); // Initialize the ArrayList
+        this.mPositions = new ArrayList<Integer>();
     }
 
     public QuestionFragment(ArrayList<QuestionModel> mQuestions, int mOrder, String mSelectedModuleID, ExamModel examModel, ArrayList<QuizModel> quiz) {
@@ -106,11 +109,9 @@ public class QuestionFragment extends Fragment {
         this.mSelectedModuleID = mSelectedModuleID;
         this.NewexamModel = examModel;
         this.quiz = new ArrayList<QuizModel>(); // Initialize the ArrayList
+        this.mPositions = new ArrayList<Integer>();
     }
 
-    public QuestionFragment(DatabaseHelper dbHelper) {
-        this.dbHelper = dbHelper;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -122,18 +123,25 @@ public class QuestionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_question, container, false);
-
         textContent = view.findViewById(R.id.textContent);
         recyclerChoices = view.findViewById(R.id.recyclerChoices);
         buttonPrevious = view.findViewById(R.id.buttonPrevious);
         buttonNext = view.findViewById(R.id.buttonNext);
+        textQuestionNumberInline = view.findViewById(R.id.textQuestionNumberInline);
         progressBar = view.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         userID = user.getUid();
         mFirestore = FirebaseFirestore.getInstance();
-        dbHelper = new DatabaseHelper(getContext());
+
+
+        if (mPositions.size() == 0) {
+            mPositions = new ArrayList<>();
+            for (int i = 0; i < mQuestions.size(); i++) {
+                mPositions.add(-1);  // -1 indicates no selection
+            }
+        }
 
         if (NewexamModel != null) {
              startDateTime = NewexamModel.getStartDateTime();
@@ -142,7 +150,7 @@ public class QuestionFragment extends Fragment {
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int selectedPosition = mcqRVAdapter.getSelectedItem();
+                int selectedPosition = mcqRVAdapter.getSelectedChoiceIndex();
                 if (selectedPosition < 0){
                     Toast.makeText(requireContext(),"Answer is not Checked",Toast.LENGTH_SHORT).show();
                 }else {
@@ -161,9 +169,10 @@ public class QuestionFragment extends Fragment {
                             NewexamModel.setQuizs(quiz);
                         }
                         NewexamModel.setState("Đang làm bài");
-
-                        saveUserAnswerToDatabase(mQuestions.get(mOrder).getId(),selectId, selectedPosition);
                     }
+
+                    mPositions.set(mOrder, selectedPosition);
+
                     HashMap<String, Object> map = new HashMap<>();
                     map.put(Constant.Database.Exam.QUESTION, NewexamModel.getQuizs());
                     map.put(Constant.Database.Exam.STATE, NewexamModel.getState());
@@ -179,7 +188,7 @@ public class QuestionFragment extends Fragment {
                     });
 
                     if (mOrder < mQuestions.size() - 1) {
-                        QuestionFragment nextFragment = new QuestionFragment(mQuestions, mOrder + 1, NewexamModel, quiz);
+                        QuestionFragment nextFragment = new QuestionFragment(mQuestions, mOrder + 1, NewexamModel, quiz, mPositions);
                         FragmentUtils.replaceFragmentQuestion(
                                 getActivity().getSupportFragmentManager(),
                                 nextFragment,
@@ -209,32 +218,30 @@ public class QuestionFragment extends Fragment {
         return view;
     }
 
-    private void saveUserAnswerToDatabase(String questionid, String answerid, int position) {
-        String questionId = questionid;
-        String answerId = answerid;
 
-        // Gọi phương thức addUserAnswer() từ DatabaseHelper để lưu câu trả lời vào cơ sở dữ liệu
-        dbHelper.addUserAnswer(questionId, answerId, position);
-    }
     private void loadData(View view) {
         if (mQuestions != null) {
             showQuestion(view);
+            String num = String.valueOf(mOrder + 1);
+            textQuestionNumberInline.setText(num);
         }
     }
+
+
 
     private void showQuestion(View view) {
         if (mOrder < mQuestions.size()) {
             QuestionModel question = mQuestions.get(mOrder);
             textContent.setText(mQuestions.get(mOrder).getContent());
 
+
+            response = mPositions.get(mOrder);
+
             mcqRVAdapter = new McqRvAdapter(
                     R.layout.layout_item_answer,
                     mQuestions.get(mOrder).getChoices(),
-                    dbHelper
+                    mOrder, response
             );
-
-            ArrayList<String> savedPositions = dbHelper.getUserAnswersForQuestion(question.getId());
-            mcqRVAdapter.setSavedAnswers(savedPositions);
 
             LinearLayoutManager layoutManager = new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false);
             recyclerChoices.setLayoutManager(layoutManager);
@@ -321,4 +328,5 @@ public class QuestionFragment extends Fragment {
         });
 
     }
+
 }

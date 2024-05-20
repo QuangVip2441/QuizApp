@@ -27,14 +27,14 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Số lượng câu hỏi: 50"
+        android:text="Số lượng câu hỏi: 10"
         android:textSize="17sp"
         android:layout_marginTop="5dp"
         android:textColor="@color/white"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Thời gian: 30 phút"
+        android:text="Thời gian: 20 phút"
         android:layout_marginTop="5dp"
         android:textSize="17sp"
         android:textColor="@color/white"/>
