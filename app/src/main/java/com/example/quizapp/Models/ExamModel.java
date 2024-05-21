@@ -11,14 +11,14 @@ public class ExamModel {
     private Date startDateTime;
     private Date endDateTime;//
     private String state;
-    private int marks; //(diem)
+    private Float marks; //(diem)
 
 
     public ExamModel() {
     }
 
 
-    public ExamModel(String id, ArrayList<QuizModel> quizs, String testname, String durationInMinutes, Date startDateTime, Date endDateTime, String state, int marks) {
+    public ExamModel(String id, ArrayList<QuizModel> quizs, String testname, String durationInMinutes, Date startDateTime, Date endDateTime, String state, Float marks) {
         this.id = id;
         this.quizs = quizs;
         this.testname = testname;
@@ -29,7 +29,7 @@ public class ExamModel {
         this.marks = marks;
     }
 
-    public ExamModel(ArrayList<QuizModel> quizs, String testname, String durationInMinutes, Date startDateTime, Date endDateTime, String state, int marks) {
+    public ExamModel(ArrayList<QuizModel> quizs, String testname, String durationInMinutes, Date startDateTime, Date endDateTime, String state, Float marks) {
         this.quizs = quizs;
         this.testname = testname;
         this.durationInMinutes = durationInMinutes;
@@ -95,11 +95,11 @@ public class ExamModel {
         this.state = state;
     }
 
-    public int getMarks() {
+    public Float getMarks() {
         return marks;
     }
 
-    public void setMarks(int marks) {
+    public void setMarks(Float marks) {
         this.marks = marks;
     }
 }

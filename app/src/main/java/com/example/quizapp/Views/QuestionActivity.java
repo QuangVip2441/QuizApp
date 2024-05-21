@@ -60,6 +60,7 @@ public class QuestionActivity extends AppCompatActivity{
     private FirebaseUser user;
     private int trueCount = 0;
     private int TimeAllow = 0;
+    private Float marks =  0f;
     private int numberOfQuestions = 0;
     private int timeAllowedInSeconds = 0;
     private ArrayList<QuestionModel> mQuestions;
@@ -278,11 +279,24 @@ public class QuestionActivity extends AppCompatActivity{
                                     (boolean) i.get("state")
                             ));
                         }
-                        for (QuizModel quiz : quizs) {
-                            if (quiz.isState()) {
-                                trueCount = trueCount + 2;
+                        if (quizs.size() > 10){
+                            for (QuizModel quiz : quizs) {
+                                if (quiz.isState()) {
+                                    trueCount = trueCount + 2;
+                                }
                             }
+                            double scoreOutOfTen = ((double) trueCount / 10);
+                            // Quy đổi điểm về thang điểm 10
+                            marks = (float) Math.round(scoreOutOfTen);
+                        }else {
+                            for (QuizModel quiz : quizs) {
+                                if (quiz.isState()) {
+                                    trueCount = trueCount + 1;
+                                }
+                            }
+                            marks = (float) trueCount;
                         }
+
                     }
 
                     examModel.setState("Hoàn thành");
@@ -310,7 +324,8 @@ public class QuestionActivity extends AppCompatActivity{
 
                     examModel.setEndDateTime(currentTime);
                     examModel.setDurationInMinutes(durationString);
-                    examModel.setMarks(trueCount);
+                    examModel.setMarks(marks);
+
 
                     HashMap<String, Object> map = new HashMap<>();
                     map.put(Constant.Database.Exam.ENDDATETIME, examModel.getEndDateTime());
@@ -325,7 +340,9 @@ public class QuestionActivity extends AppCompatActivity{
                     mRefDocumentExam.update(map).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void unused) {
-                            Intent intent = new Intent(QuestionActivity.this, MainActivity.class);
+                            String examid = examModel.getId();
+                            Intent intent = new Intent(QuestionActivity.this, ResultActivity.class);
+                            intent.putExtra("Key", examid);
                             startActivity(intent);
                         }
                     });

@@ -65,6 +65,7 @@ public class QuestionFragment extends Fragment {
     private int mOrder;
     private String mSelectedModuleID;
     private String questionId;
+    private Float marks =  0f;
     private int trueCount = 0;
     private McqRvAdapter mcqRVAdapter;
     // Firebase
@@ -272,10 +273,23 @@ public class QuestionFragment extends Fragment {
                                     (boolean) i.get("state")
                             ));
                         }
-                        for (QuizModel quiz : quizs) {
-                            if (quiz.isState()) {
-                                trueCount = trueCount + 2;
+
+                        if (quizs.size() > 10){
+                            for (QuizModel quiz : quizs) {
+                                if (quiz.isState()) {
+                                    trueCount = trueCount + 2;
+                                }
                             }
+                            double scoreOutOfTen = ((double) trueCount / 10);
+                            // Quy đổi điểm về thang điểm 10
+                            marks = (float) Math.round(scoreOutOfTen);
+                        }else {
+                            for (QuizModel quiz : quizs) {
+                                if (quiz.isState()) {
+                                    trueCount = trueCount + 1;
+                                }
+                            }
+                            marks = (float) trueCount;
                         }
                     }
 
@@ -304,7 +318,7 @@ public class QuestionFragment extends Fragment {
 
                     NewexamModel.setEndDateTime(currentTime);
                     NewexamModel.setDurationInMinutes(durationString);
-                    NewexamModel.setMarks(trueCount);
+                    NewexamModel.setMarks(marks);
 
                     HashMap<String, Object> map = new HashMap<>();
                     map.put(Constant.Database.Exam.ENDDATETIME, NewexamModel.getEndDateTime());
@@ -319,7 +333,9 @@ public class QuestionFragment extends Fragment {
                     mRefDocumentExam.update(map).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void unused) {
-                            Intent intent = new Intent(getActivity(), MainActivity.class);
+                            String examid = NewexamModel.getId();
+                            Intent intent = new Intent(getActivity(), ResultActivity.class);
+                            intent.putExtra("Key", examid);
                             startActivity(intent);
                         }
                     });
