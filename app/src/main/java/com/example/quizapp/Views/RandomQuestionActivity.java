@@ -73,7 +73,7 @@ public class RandomQuestionActivity extends AppCompatActivity {
     private FirebaseFirestore mFirestore;
     private DatabaseHelper dbHelper;
     private Float marks =  0f;
-    private CollectionReference mRefCollectionQuestions, mRefCollectionExam;
+    private CollectionReference mRefCollectionQuestions, mRefCollectionExam, mRefCollectionTestAdmin;
     private DocumentReference mRefDocumentExam, mRefDocumentTestAdmin;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,7 +138,6 @@ public class RandomQuestionActivity extends AppCompatActivity {
                         // Thời gian cho phép với 30 phút
                         timeAllowedInSeconds = TimeAllow * 60;
                         // Tạo object và gán thời gian bắt đầu
-                        examModel = new ExamModel();
                         try {
                             Date startDateTime = dateFormat.parse(currentDateTime);
                             // Thiết lập startDateTime
@@ -149,8 +148,6 @@ public class RandomQuestionActivity extends AppCompatActivity {
                         startQuizTimer(currentTimeMillis, timeAllowedInSeconds);
                         HashMap<String, Object> map = new HashMap<>();
                         map.put(Constant.Database.Exam.STARTDATETIME, examModel.getStartDateTime());
-
-
 
                         mRefCollectionExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ).document(userID)
                                 .collection(Constant.Database.Exam.COLLECTION_EXAM);
@@ -165,298 +162,324 @@ public class RandomQuestionActivity extends AppCompatActivity {
                                 mRefCollectionExam.document(id).update(update);
                             }
                         });
-
-                        Map<String, Integer> moduleQuestionMap = new HashMap<>();
-                        moduleQuestionMap.put(IDmodule1, 0);
-                        moduleQuestionMap.put(IDmodule2, 0);
-                        moduleQuestionMap.put(IDmodule3, 0);
-                        moduleQuestionMap.put(IDmodule4, 0);
-                        moduleQuestionMap.put(IDmodule5, 0);
-                        moduleQuestionMap.put(IDmodule6, 0);
-
-                        // Lặp qua danh sách mtestadmin để cập nhật số câu hỏi cho từng module
-                        for (TestAdministration testAdmin : mtestadmin) {
-                            if (moduleQuestionMap.containsKey(testAdmin.getId())) {
-                                moduleQuestionMap.put(testAdmin.getId(), testAdmin.getTest_numberQuestions());
-                            }
-                        }
-                        // ============================================================1
-
-                        mRefCollectionQuestions = mFirestore
-                                .collection(COLLECTION_MODULE)
-                                .document(IDmodule1)
-                                .collection(Constant.Database.Question.COLLECTION_QUESTIONS);
-
-                        mRefCollectionQuestions
-                                .get()
-                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                        if (task.isSuccessful()) {
-                                            mQuestionsModule1.clear();
-                                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                                Map<String, Object> data = document.getData();
-                                                ArrayList<ChoiceModel> choices = new ArrayList<>();
-
-                                                ArrayList<HashMap<String, Object>> temp = (ArrayList<HashMap<String, Object>>) data.get(Constant.Database.Question.CHOICES);
-
-                                                for (HashMap<String, Object> i : temp) {
-                                                    choices.add(new ChoiceModel(
-                                                            (String) i.get(Constant.Database.Choice.ID),
-                                                            (String) i.get(Constant.Database.Choice.CONTENT)
-                                                    ));
-                                                }
-
-                                                QuestionModel question = new QuestionModel(
-                                                        (String) data.get(Constant.Database.Question.ID),
-                                                        (String) data.get(Constant.Database.Question.CONTENT),
-                                                        choices,
-                                                        (String) data.get(Constant.Database.Question.CORRECT)
-                                                );
-
-                                                mQuestionsModule1.add(question);
-
-                                            }
-                                            Collections.shuffle(mQuestionsModule1);
-                                            mQuestions.addAll(getRandomQuestions(mQuestionsModule1, moduleQuestionMap.get(IDmodule1)));
-
-
-                                            // ============================================================2
-                                            mRefCollectionQuestions = mFirestore
-                                                    .collection(COLLECTION_MODULE)
-                                                    .document(IDmodule2)
-                                                    .collection(Constant.Database.Question.COLLECTION_QUESTIONS);
-
-                                            mRefCollectionQuestions
-                                                    .get()
-                                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                        @Override
-                                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                            if (task.isSuccessful()) {
-                                                                mQuestionsModule2.clear();
-                                                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                                                    Map<String, Object> data = document.getData();
-                                                                    ArrayList<ChoiceModel> choices = new ArrayList<>();
-
-                                                                    ArrayList<HashMap<String, Object>> temp = (ArrayList<HashMap<String, Object>>) data.get(Constant.Database.Question.CHOICES);
-
-                                                                    for (HashMap<String, Object> i : temp) {
-                                                                        choices.add(new ChoiceModel(
-                                                                                (String) i.get(Constant.Database.Choice.ID),
-                                                                                (String) i.get(Constant.Database.Choice.CONTENT)
-                                                                        ));
-                                                                    }
-
-                                                                    QuestionModel question = new QuestionModel(
-                                                                            (String) data.get(Constant.Database.Question.ID),
-                                                                            (String) data.get(Constant.Database.Question.CONTENT),
-                                                                            choices,
-                                                                            (String) data.get(Constant.Database.Question.CORRECT)
-                                                                    );
-
-                                                                    mQuestionsModule2.add(question);
-
-                                                                }
-                                                                Collections.shuffle(mQuestionsModule2);
-                                                                mQuestions.addAll(getRandomQuestions(mQuestionsModule2, moduleQuestionMap.get(IDmodule2)));
-
-                                                                // ============================================================3
-                                                                mRefCollectionQuestions = mFirestore
-                                                                        .collection(COLLECTION_MODULE)
-                                                                        .document(IDmodule3)
-                                                                        .collection(Constant.Database.Question.COLLECTION_QUESTIONS);
-
-                                                                mRefCollectionQuestions
-                                                                        .get()
-                                                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                                            @Override
-                                                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                                                if (task.isSuccessful()) {
-                                                                                    mQuestionsModule3.clear();
-                                                                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                                                                        Map<String, Object> data = document.getData();
-                                                                                        ArrayList<ChoiceModel> choices = new ArrayList<>();
-
-                                                                                        ArrayList<HashMap<String, Object>> temp = (ArrayList<HashMap<String, Object>>) data.get(Constant.Database.Question.CHOICES);
-
-                                                                                        for (HashMap<String, Object> i : temp) {
-                                                                                            choices.add(new ChoiceModel(
-                                                                                                    (String) i.get(Constant.Database.Choice.ID),
-                                                                                                    (String) i.get(Constant.Database.Choice.CONTENT)
-                                                                                            ));
-                                                                                        }
-
-                                                                                        QuestionModel question = new QuestionModel(
-                                                                                                (String) data.get(Constant.Database.Question.ID),
-                                                                                                (String) data.get(Constant.Database.Question.CONTENT),
-                                                                                                choices,
-                                                                                                (String) data.get(Constant.Database.Question.CORRECT)
-                                                                                        );
-
-                                                                                        mQuestionsModule3.add(question);
-
-                                                                                    }
-                                                                                    Collections.shuffle(mQuestionsModule3);
-                                                                                    mQuestions.addAll(getRandomQuestions(mQuestionsModule3, moduleQuestionMap.get(IDmodule3)));
-
-                                                                                    //==============================================================4
-                                                                                    mRefCollectionQuestions = mFirestore
-                                                                                            .collection(COLLECTION_MODULE)
-                                                                                            .document(IDmodule4)
-                                                                                            .collection(Constant.Database.Question.COLLECTION_QUESTIONS);
-
-                                                                                    mRefCollectionQuestions
-                                                                                            .get()
-                                                                                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                                                                @Override
-                                                                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                                                                    if (task.isSuccessful()) {
-                                                                                                        mQuestionsModule4.clear();
-                                                                                                        for (QueryDocumentSnapshot document : task.getResult()) {
-                                                                                                            Map<String, Object> data = document.getData();
-                                                                                                            ArrayList<ChoiceModel> choices = new ArrayList<>();
-
-                                                                                                            ArrayList<HashMap<String, Object>> temp = (ArrayList<HashMap<String, Object>>) data.get(Constant.Database.Question.CHOICES);
-
-                                                                                                            for (HashMap<String, Object> i : temp) {
-                                                                                                                choices.add(new ChoiceModel(
-                                                                                                                        (String) i.get(Constant.Database.Choice.ID),
-                                                                                                                        (String) i.get(Constant.Database.Choice.CONTENT)
-                                                                                                                ));
-                                                                                                            }
-
-                                                                                                            QuestionModel question = new QuestionModel(
-                                                                                                                    (String) data.get(Constant.Database.Question.ID),
-                                                                                                                    (String) data.get(Constant.Database.Question.CONTENT),
-                                                                                                                    choices,
-                                                                                                                    (String) data.get(Constant.Database.Question.CORRECT)
-                                                                                                            );
-
-                                                                                                            mQuestionsModule4.add(question);
-
-                                                                                                        }
-                                                                                                        Collections.shuffle(mQuestionsModule4);
-                                                                                                        mQuestions.addAll(getRandomQuestions(mQuestionsModule4, moduleQuestionMap.get(IDmodule4)));
-
-                                                                                                        //===========================================================5
-                                                                                                        mRefCollectionQuestions = mFirestore
-                                                                                                                .collection(COLLECTION_MODULE)
-                                                                                                                .document(IDmodule5)
-                                                                                                                .collection(Constant.Database.Question.COLLECTION_QUESTIONS);
-
-                                                                                                        mRefCollectionQuestions
-                                                                                                                .get()
-                                                                                                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                                                                                    @Override
-                                                                                                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                                                                                        if (task.isSuccessful()) {
-                                                                                                                            mQuestionsModule5.clear();
-                                                                                                                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                                                                                                                Map<String, Object> data = document.getData();
-                                                                                                                                ArrayList<ChoiceModel> choices = new ArrayList<>();
-
-                                                                                                                                ArrayList<HashMap<String, Object>> temp = (ArrayList<HashMap<String, Object>>) data.get(Constant.Database.Question.CHOICES);
-
-                                                                                                                                for (HashMap<String, Object> i : temp) {
-                                                                                                                                    choices.add(new ChoiceModel(
-                                                                                                                                            (String) i.get(Constant.Database.Choice.ID),
-                                                                                                                                            (String) i.get(Constant.Database.Choice.CONTENT)
-                                                                                                                                    ));
-                                                                                                                                }
-
-                                                                                                                                QuestionModel question = new QuestionModel(
-                                                                                                                                        (String) data.get(Constant.Database.Question.ID),
-                                                                                                                                        (String) data.get(Constant.Database.Question.CONTENT),
-                                                                                                                                        choices,
-                                                                                                                                        (String) data.get(Constant.Database.Question.CORRECT)
-                                                                                                                                );
-
-                                                                                                                                mQuestionsModule5.add(question);
-
-                                                                                                                            }
-                                                                                                                            Collections.shuffle(mQuestionsModule5);
-                                                                                                                            mQuestions.addAll(getRandomQuestions(mQuestionsModule5, moduleQuestionMap.get(IDmodule5)));
-
-                                                                                                                            //===============================================================6
-                                                                                                                            mRefCollectionQuestions = mFirestore
-                                                                                                                                    .collection(COLLECTION_MODULE)
-                                                                                                                                    .document(IDmodule6)
-                                                                                                                                    .collection(Constant.Database.Question.COLLECTION_QUESTIONS);
-
-                                                                                                                            mRefCollectionQuestions
-                                                                                                                                    .get()
-                                                                                                                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                                                                                                        @Override
-                                                                                                                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                                                                                                            if (task.isSuccessful()) {
-                                                                                                                                                mQuestionsModule6.clear();
-                                                                                                                                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                                                                                                                                    Map<String, Object> data = document.getData();
-                                                                                                                                                    ArrayList<ChoiceModel> choices = new ArrayList<>();
-
-                                                                                                                                                    ArrayList<HashMap<String, Object>> temp = (ArrayList<HashMap<String, Object>>) data.get(Constant.Database.Question.CHOICES);
-
-                                                                                                                                                    for (HashMap<String, Object> i : temp) {
-                                                                                                                                                        choices.add(new ChoiceModel(
-                                                                                                                                                                (String) i.get(Constant.Database.Choice.ID),
-                                                                                                                                                                (String) i.get(Constant.Database.Choice.CONTENT)
-                                                                                                                                                        ));
-                                                                                                                                                    }
-
-                                                                                                                                                    QuestionModel question = new QuestionModel(
-                                                                                                                                                            (String) data.get(Constant.Database.Question.ID),
-                                                                                                                                                            (String) data.get(Constant.Database.Question.CONTENT),
-                                                                                                                                                            choices,
-                                                                                                                                                            (String) data.get(Constant.Database.Question.CORRECT)
-                                                                                                                                                    );
-
-                                                                                                                                                    mQuestionsModule6.add(question);
-
-                                                                                                                                                }
-                                                                                                                                                Collections.shuffle(mQuestionsModule6);
-                                                                                                                                                mQuestions.addAll(getRandomQuestions(mQuestionsModule6, moduleQuestionMap.get(IDmodule6)));
-
-
-                                                                                                                                                Collections.shuffle(mQuestions);
-                                                                                                                                                // add questions
-                                                                                                                                                questionAdapter = new QuestionAdapter(R.layout.layout_item_header_number_question, mQuestions);
-                                                                                                                                                LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
-                                                                                                                                                recyclerNumberQuestion.setLayoutManager(layoutManager);
-                                                                                                                                                recyclerNumberQuestion.setAdapter(questionAdapter);
-
-                                                                                                                                                QuestionFragment questionFragment = new QuestionFragment(mQuestions, 0, examModel);
-                                                                                                                                                FragmentUtils.replaceFragmentQuestion(getSupportFragmentManager(), questionFragment, true);
-
-                                                                                                                                                questionAdapter.setOnItemClickListener(new QuestionAdapter.OnItemClickListener() {
-                                                                                                                                                    @Override
-                                                                                                                                                    public void onItemClick(String questionId, int position) {
-                                                                                                                                                        QuestionFragment questionFragment = new QuestionFragment(mQuestions, position, examModel);
-                                                                                                                                                        FragmentUtils.replaceFragmentQuestion(getSupportFragmentManager(), questionFragment, true);
-                                                                                                                                                    }
-                                                                                                                                                });
-
-                                                                                                                                            }
-                                                                                                                                        }
-                                                                                                                                    });
-                                                                                                                        }
-                                                                                                                    }
-                                                                                                                });
-                                                                                                    }
-                                                                                                }
-                                                                                            });
-                                                                                }
-                                                                            }
-                                                                        });
-                                                            }
-                                                        }
-                                                    });
-                                        }
-                                    }
-                                });
                     }
                 }
             }
         });
+
+        mRefCollectionTestAdmin = mFirestore.collection(Constant.Database.TestAdministration.COLLECTION_TEST_ADMIN);
+        mRefCollectionTestAdmin.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    mtestadmin.clear();
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        Map<String, Object> data = document.getData();
+
+                        TestAdministration testAdministration = new TestAdministration(
+                                (String) data.get(Constant.Database.TestAdministration.MODULEID),
+                                (String) data.get(Constant.Database.TestAdministration.TEST_NAME),
+                                ((Long) data.get(Constant.Database.TestAdministration.TEST_GET_NUMBER_QUESTIONS)).intValue(),
+                                ((Long) data.get(Constant.Database.TestAdministration.NUMBERQUESTION)).intValue(),
+                                ((Long) data.get(Constant.Database.TestAdministration.TIMEALLOWED)).intValue()
+                        );
+
+                        mtestadmin.add(testAdministration);
+                    }
+
+                    Map<String, Integer> moduleQuestionMap = new HashMap<>();
+                    moduleQuestionMap.put(IDmodule1, 0);
+                    moduleQuestionMap.put(IDmodule2, 0);
+                    moduleQuestionMap.put(IDmodule3, 0);
+                    moduleQuestionMap.put(IDmodule4, 0);
+                    moduleQuestionMap.put(IDmodule5, 0);
+                    moduleQuestionMap.put(IDmodule6, 0);
+
+                    // Lặp qua danh sách mtestadmin để cập nhật số câu hỏi cho từng module
+                    for (TestAdministration testAdmin : mtestadmin) {
+                        if (moduleQuestionMap.containsKey(testAdmin.getId())) {
+                            moduleQuestionMap.put(testAdmin.getId(), testAdmin.getTest_numberQuestions());
+                        }
+                    }
+                    // ============================================================1
+
+                    mRefCollectionQuestions = mFirestore
+                            .collection(COLLECTION_MODULE)
+                            .document(IDmodule1)
+                            .collection(Constant.Database.Question.COLLECTION_QUESTIONS);
+
+                    mRefCollectionQuestions
+                            .get()
+                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        mQuestionsModule1.clear();
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                            Map<String, Object> data = document.getData();
+                                            ArrayList<ChoiceModel> choices = new ArrayList<>();
+
+                                            ArrayList<HashMap<String, Object>> temp = (ArrayList<HashMap<String, Object>>) data.get(Constant.Database.Question.CHOICES);
+
+                                            for (HashMap<String, Object> i : temp) {
+                                                choices.add(new ChoiceModel(
+                                                        (String) i.get(Constant.Database.Choice.ID),
+                                                        (String) i.get(Constant.Database.Choice.CONTENT)
+                                                ));
+                                            }
+
+                                            QuestionModel question = new QuestionModel(
+                                                    (String) data.get(Constant.Database.Question.ID),
+                                                    (String) data.get(Constant.Database.Question.CONTENT),
+                                                    choices,
+                                                    (String) data.get(Constant.Database.Question.CORRECT)
+                                            );
+
+                                            mQuestionsModule1.add(question);
+
+                                        }
+                                        Collections.shuffle(mQuestionsModule1);
+                                        mQuestions.addAll(getRandomQuestions(mQuestionsModule1, moduleQuestionMap.get(IDmodule1)));
+
+
+                                        // ============================================================2
+                                        mRefCollectionQuestions = mFirestore
+                                                .collection(COLLECTION_MODULE)
+                                                .document(IDmodule2)
+                                                .collection(Constant.Database.Question.COLLECTION_QUESTIONS);
+
+                                        mRefCollectionQuestions
+                                                .get()
+                                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                        if (task.isSuccessful()) {
+                                                            mQuestionsModule2.clear();
+                                                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                                                Map<String, Object> data = document.getData();
+                                                                ArrayList<ChoiceModel> choices = new ArrayList<>();
+
+                                                                ArrayList<HashMap<String, Object>> temp = (ArrayList<HashMap<String, Object>>) data.get(Constant.Database.Question.CHOICES);
+
+                                                                for (HashMap<String, Object> i : temp) {
+                                                                    choices.add(new ChoiceModel(
+                                                                            (String) i.get(Constant.Database.Choice.ID),
+                                                                            (String) i.get(Constant.Database.Choice.CONTENT)
+                                                                    ));
+                                                                }
+
+                                                                QuestionModel question = new QuestionModel(
+                                                                        (String) data.get(Constant.Database.Question.ID),
+                                                                        (String) data.get(Constant.Database.Question.CONTENT),
+                                                                        choices,
+                                                                        (String) data.get(Constant.Database.Question.CORRECT)
+                                                                );
+
+                                                                mQuestionsModule2.add(question);
+
+                                                            }
+                                                            Collections.shuffle(mQuestionsModule2);
+                                                            mQuestions.addAll(getRandomQuestions(mQuestionsModule2, moduleQuestionMap.get(IDmodule2)));
+
+                                                            // ============================================================3
+                                                            mRefCollectionQuestions = mFirestore
+                                                                    .collection(COLLECTION_MODULE)
+                                                                    .document(IDmodule3)
+                                                                    .collection(Constant.Database.Question.COLLECTION_QUESTIONS);
+
+                                                            mRefCollectionQuestions
+                                                                    .get()
+                                                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                                        @Override
+                                                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                                            if (task.isSuccessful()) {
+                                                                                mQuestionsModule3.clear();
+                                                                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                                                                    Map<String, Object> data = document.getData();
+                                                                                    ArrayList<ChoiceModel> choices = new ArrayList<>();
+
+                                                                                    ArrayList<HashMap<String, Object>> temp = (ArrayList<HashMap<String, Object>>) data.get(Constant.Database.Question.CHOICES);
+
+                                                                                    for (HashMap<String, Object> i : temp) {
+                                                                                        choices.add(new ChoiceModel(
+                                                                                                (String) i.get(Constant.Database.Choice.ID),
+                                                                                                (String) i.get(Constant.Database.Choice.CONTENT)
+                                                                                        ));
+                                                                                    }
+
+                                                                                    QuestionModel question = new QuestionModel(
+                                                                                            (String) data.get(Constant.Database.Question.ID),
+                                                                                            (String) data.get(Constant.Database.Question.CONTENT),
+                                                                                            choices,
+                                                                                            (String) data.get(Constant.Database.Question.CORRECT)
+                                                                                    );
+
+                                                                                    mQuestionsModule3.add(question);
+
+                                                                                }
+                                                                                Collections.shuffle(mQuestionsModule3);
+                                                                                mQuestions.addAll(getRandomQuestions(mQuestionsModule3, moduleQuestionMap.get(IDmodule3)));
+
+                                                                                //==============================================================4
+                                                                                mRefCollectionQuestions = mFirestore
+                                                                                        .collection(COLLECTION_MODULE)
+                                                                                        .document(IDmodule4)
+                                                                                        .collection(Constant.Database.Question.COLLECTION_QUESTIONS);
+
+                                                                                mRefCollectionQuestions
+                                                                                        .get()
+                                                                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                                                            @Override
+                                                                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                                                                if (task.isSuccessful()) {
+                                                                                                    mQuestionsModule4.clear();
+                                                                                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                                                                                        Map<String, Object> data = document.getData();
+                                                                                                        ArrayList<ChoiceModel> choices = new ArrayList<>();
+
+                                                                                                        ArrayList<HashMap<String, Object>> temp = (ArrayList<HashMap<String, Object>>) data.get(Constant.Database.Question.CHOICES);
+
+                                                                                                        for (HashMap<String, Object> i : temp) {
+                                                                                                            choices.add(new ChoiceModel(
+                                                                                                                    (String) i.get(Constant.Database.Choice.ID),
+                                                                                                                    (String) i.get(Constant.Database.Choice.CONTENT)
+                                                                                                            ));
+                                                                                                        }
+
+                                                                                                        QuestionModel question = new QuestionModel(
+                                                                                                                (String) data.get(Constant.Database.Question.ID),
+                                                                                                                (String) data.get(Constant.Database.Question.CONTENT),
+                                                                                                                choices,
+                                                                                                                (String) data.get(Constant.Database.Question.CORRECT)
+                                                                                                        );
+
+                                                                                                        mQuestionsModule4.add(question);
+
+                                                                                                    }
+                                                                                                    Collections.shuffle(mQuestionsModule4);
+                                                                                                    mQuestions.addAll(getRandomQuestions(mQuestionsModule4, moduleQuestionMap.get(IDmodule4)));
+
+                                                                                                    //===========================================================5
+                                                                                                    mRefCollectionQuestions = mFirestore
+                                                                                                            .collection(COLLECTION_MODULE)
+                                                                                                            .document(IDmodule5)
+                                                                                                            .collection(Constant.Database.Question.COLLECTION_QUESTIONS);
+
+                                                                                                    mRefCollectionQuestions
+                                                                                                            .get()
+                                                                                                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                                                                                @Override
+                                                                                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                                                                                    if (task.isSuccessful()) {
+                                                                                                                        mQuestionsModule5.clear();
+                                                                                                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                                                                                                            Map<String, Object> data = document.getData();
+                                                                                                                            ArrayList<ChoiceModel> choices = new ArrayList<>();
+
+                                                                                                                            ArrayList<HashMap<String, Object>> temp = (ArrayList<HashMap<String, Object>>) data.get(Constant.Database.Question.CHOICES);
+
+                                                                                                                            for (HashMap<String, Object> i : temp) {
+                                                                                                                                choices.add(new ChoiceModel(
+                                                                                                                                        (String) i.get(Constant.Database.Choice.ID),
+                                                                                                                                        (String) i.get(Constant.Database.Choice.CONTENT)
+                                                                                                                                ));
+                                                                                                                            }
+
+                                                                                                                            QuestionModel question = new QuestionModel(
+                                                                                                                                    (String) data.get(Constant.Database.Question.ID),
+                                                                                                                                    (String) data.get(Constant.Database.Question.CONTENT),
+                                                                                                                                    choices,
+                                                                                                                                    (String) data.get(Constant.Database.Question.CORRECT)
+                                                                                                                            );
+
+                                                                                                                            mQuestionsModule5.add(question);
+
+                                                                                                                        }
+                                                                                                                        Collections.shuffle(mQuestionsModule5);
+                                                                                                                        mQuestions.addAll(getRandomQuestions(mQuestionsModule5, moduleQuestionMap.get(IDmodule5)));
+
+                                                                                                                        //===============================================================6
+                                                                                                                        mRefCollectionQuestions = mFirestore
+                                                                                                                                .collection(COLLECTION_MODULE)
+                                                                                                                                .document(IDmodule6)
+                                                                                                                                .collection(Constant.Database.Question.COLLECTION_QUESTIONS);
+
+                                                                                                                        mRefCollectionQuestions
+                                                                                                                                .get()
+                                                                                                                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                                                                                                    @Override
+                                                                                                                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                                                                                                        if (task.isSuccessful()) {
+                                                                                                                                            mQuestionsModule6.clear();
+                                                                                                                                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                                                                                                                                Map<String, Object> data = document.getData();
+                                                                                                                                                ArrayList<ChoiceModel> choices = new ArrayList<>();
+
+                                                                                                                                                ArrayList<HashMap<String, Object>> temp = (ArrayList<HashMap<String, Object>>) data.get(Constant.Database.Question.CHOICES);
+
+                                                                                                                                                for (HashMap<String, Object> i : temp) {
+                                                                                                                                                    choices.add(new ChoiceModel(
+                                                                                                                                                            (String) i.get(Constant.Database.Choice.ID),
+                                                                                                                                                            (String) i.get(Constant.Database.Choice.CONTENT)
+                                                                                                                                                    ));
+                                                                                                                                                }
+
+                                                                                                                                                QuestionModel question = new QuestionModel(
+                                                                                                                                                        (String) data.get(Constant.Database.Question.ID),
+                                                                                                                                                        (String) data.get(Constant.Database.Question.CONTENT),
+                                                                                                                                                        choices,
+                                                                                                                                                        (String) data.get(Constant.Database.Question.CORRECT)
+                                                                                                                                                );
+
+                                                                                                                                                mQuestionsModule6.add(question);
+
+                                                                                                                                            }
+                                                                                                                                            Collections.shuffle(mQuestionsModule6);
+                                                                                                                                            mQuestions.addAll(getRandomQuestions(mQuestionsModule6, moduleQuestionMap.get(IDmodule6)));
+
+
+                                                                                                                                            Collections.shuffle(mQuestions);
+                                                                                                                                            // add questions
+                                                                                                                                            questionAdapter = new QuestionAdapter(R.layout.layout_item_header_number_question, mQuestions);
+                                                                                                                                            LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
+                                                                                                                                            recyclerNumberQuestion.setLayoutManager(layoutManager);
+                                                                                                                                            recyclerNumberQuestion.setAdapter(questionAdapter);
+
+                                                                                                                                            QuestionFragment questionFragment = new QuestionFragment(mQuestions, 0, examModel);
+                                                                                                                                            FragmentUtils.replaceFragmentQuestion(getSupportFragmentManager(), questionFragment, true);
+
+                                                                                                                                            questionAdapter.setOnItemClickListener(new QuestionAdapter.OnItemClickListener() {
+                                                                                                                                                @Override
+                                                                                                                                                public void onItemClick(String questionId, int position) {
+                                                                                                                                                    QuestionFragment questionFragment = new QuestionFragment(mQuestions, position, examModel);
+                                                                                                                                                    FragmentUtils.replaceFragmentQuestion(getSupportFragmentManager(), questionFragment, true);
+                                                                                                                                                }
+                                                                                                                                            });
+
+                                                                                                                                        }
+                                                                                                                                    }
+                                                                                                                                });
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            });
+                                                                                                }
+                                                                                            }
+                                                                                        });
+                                                                            }
+                                                                        }
+                                                                    });
+                                                        }
+                                                    }
+                                                });
+                                    }
+                                }
+                            });
+
+                }
+            }
+        });
+
+
     }
 
 
