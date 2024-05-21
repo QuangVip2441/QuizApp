@@ -24,6 +24,7 @@ public class Constant {
             public static final String COLLECTION_EXAM = "exam";
             public static final String STARTDATETIME = "start_timer";
             public static final String ENDDATETIME = "end_timer";
+            public static final String MODULEID = "moduleid";
             public static final String QUESTION = "question";
             public static final String DURATION_IN_MINUTES = "durationinminutes";
             public static final String MARKS = "marks";

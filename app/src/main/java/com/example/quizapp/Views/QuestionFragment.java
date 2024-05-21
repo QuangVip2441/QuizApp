@@ -326,6 +326,7 @@ public class QuestionFragment extends Fragment {
                     map.put(Constant.Database.Exam.MARKS, NewexamModel.getMarks());
                     map.put(Constant.Database.Exam.STATE, NewexamModel.getState());
                     map.put(Constant.Database.Exam.TEST_NAME, NewexamModel.getTestname());
+                    map.put(Constant.Database.Exam.MODULEID, NewexamModel.getModuleId());
 
                     mRefDocumentExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ)
                             .document(userID).collection(Constant.Database.Exam.COLLECTION_EXAM)

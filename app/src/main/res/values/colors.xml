@@ -18,4 +18,5 @@
     <color name="primaryTextColor">#2661FA</color>
     <color name="purple">#8692f7</color>
     <color name="secondary">#06CBED</color>
+    <color name="HistoryTitle">#057591</color>
 </resources>

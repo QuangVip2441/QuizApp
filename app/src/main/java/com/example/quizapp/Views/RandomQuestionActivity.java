@@ -123,6 +123,7 @@ public class RandomQuestionActivity extends AppCompatActivity {
 
                         TimeAllow = testAdministration.getTimeAllowed();
                         examModel.setTestname(testAdministration.getTest_name());
+                        examModel.setModuleId("ZayqBjRnPr1GXBoyPdOh");
 
 
                         // Tạo thời gian bắt đầu
@@ -594,6 +595,7 @@ public class RandomQuestionActivity extends AppCompatActivity {
                     map.put(Constant.Database.Exam.MARKS, examModel.getMarks());
                     map.put(Constant.Database.Exam.STATE, examModel.getState());
                     map.put(Constant.Database.Exam.TEST_NAME, examModel.getTestname());
+                    map.put(Constant.Database.Exam.MODULEID, examModel.getModuleId());
 
                     mRefDocumentExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ)
                             .document(userID).collection(Constant.Database.Exam.COLLECTION_EXAM)

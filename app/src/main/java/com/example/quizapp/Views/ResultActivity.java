@@ -104,7 +104,12 @@ public class ResultActivity extends AppCompatActivity {
 
 
                         int totalQuestions = quizModels.size();
-                        txttotalScore.setText(String.valueOf(totalQuestions));
+                        if (totalQuestions > 10){
+                            txttotalScore.setText(String.valueOf(totalQuestions/5));
+                        }else {
+                            txttotalScore.setText(String.valueOf(totalQuestions));
+                        }
+
 
                         txtincorrect.setText(String.valueOf(totalQuestions - correct));
 

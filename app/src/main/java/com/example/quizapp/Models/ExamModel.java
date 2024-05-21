@@ -5,6 +5,7 @@ import java.util.Date;
 
 public class ExamModel {
     private String id;
+    private String moduleId;
     private ArrayList<QuizModel> quizs ;
     private String testname;
     private String durationInMinutes;//
@@ -30,6 +31,18 @@ public class ExamModel {
     }
 
     public ExamModel(ArrayList<QuizModel> quizs, String testname, String durationInMinutes, Date startDateTime, Date endDateTime, String state, Float marks) {
+        this.quizs = quizs;
+        this.testname = testname;
+        this.durationInMinutes = durationInMinutes;
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+        this.state = state;
+        this.marks = marks;
+    }
+
+    public ExamModel(String id, String moduleId, ArrayList<QuizModel> quizs, String testname, String durationInMinutes, Date startDateTime, Date endDateTime, String state, Float marks) {
+        this.id = id;
+        this.moduleId = moduleId;
         this.quizs = quizs;
         this.testname = testname;
         this.durationInMinutes = durationInMinutes;
@@ -101,5 +114,13 @@ public class ExamModel {
 
     public void setMarks(Float marks) {
         this.marks = marks;
+    }
+
+    public String getModuleId() {
+        return moduleId;
+    }
+
+    public void setModuleId(String moduleId) {
+        this.moduleId = moduleId;
     }
 }

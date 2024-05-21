@@ -140,6 +140,7 @@ public class QuestionActivity extends AppCompatActivity{
                                                 Long.parseLong(data.get(Constant.Database.Module.NUMBER_QUESTIONS).toString())
                                         );
                                         examModel.setTestname(module.getName());
+                                        examModel.setModuleId(moduleID);
 
                                     } else {
                                         Log.d(TAG,"document does not exist");
@@ -333,6 +334,7 @@ public class QuestionActivity extends AppCompatActivity{
                     map.put(Constant.Database.Exam.MARKS, examModel.getMarks());
                     map.put(Constant.Database.Exam.STATE, examModel.getState());
                     map.put(Constant.Database.Exam.TEST_NAME, examModel.getTestname());
+                    map.put(Constant.Database.Exam.MODULEID, examModel.getModuleId());
 
                     mRefDocumentExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ)
                             .document(userID).collection(Constant.Database.Exam.COLLECTION_EXAM)

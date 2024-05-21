@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="130dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="36dp"
+    android:backgroundTint="@color/white"
+    android:layout_margin="24dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="3">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tên bài thi:"
+                android:textSize="18sp"
+                android:layout_marginStart="10dp"
+                android:layout_weight="2"
+                android:background="@color/white"
+                android:alpha="0.5"/>
+
+            <TextView
+                android:id="@+id/txtName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Name"
+                android:textAllCaps="true"
+                android:textColor="@color/secondary"
+                android:textSize="18sp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                android:background="@color/white"
+                android:alpha="0.5"/>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:weightSum="3">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Thời gian:"
+                android:textSize="18sp"
+                android:layout_marginStart="10dp"
+                android:layout_weight="2"
+                android:background="@color/white"
+                android:alpha="0.5"/>
+
+            <TextView
+                android:id="@+id/txtdurationinminutes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="durationinminutes"
+                android:textAllCaps="true"
+                android:textSize="18sp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                android:textColor="@color/colordeepBlue"
+                android:background="@color/white"
+                android:alpha="0.5"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:weightSum="3">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Số điểm:"
+                android:textSize="18sp"
+                android:layout_marginStart="10dp"
+                android:layout_weight="2"
+                android:background="@color/white"
+                android:alpha="0.5"/>
+
+            <TextView
+                android:id="@+id/txtmarks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="marks"
+                android:textColor="@color/colorbrown"
+                android:textAllCaps="true"
+                android:textSize="18sp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                android:background="@color/white"
+                android:alpha="0.5"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
