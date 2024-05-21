@@ -22,15 +22,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private final int RESOURCE_ID;
     private int Position;
     private ArrayList<ExamModel> examModels;
-    private ArrayList<QuestionModel> questionModels;
-    private ArrayList<QuizModel> quizModels;
 
-    public HistoryAdapter(int RESOURCE_ID, ArrayList<ExamModel> examModels, ArrayList<QuestionModel> questionModels, ArrayList<QuizModel> quizModels) {
-        this.RESOURCE_ID = RESOURCE_ID;
-        this.examModels = examModels;
-        this.questionModels = questionModels;
-        this.quizModels = quizModels;
-    }
+
 
     public void setOnItemClickListener(OnItemClickListener mListenerHistory) {
         this.mListenerHistory = mListenerHistory;
@@ -58,9 +51,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ExamModel examModel = examModels.get(holder.getAdapterPosition());
-        QuestionModel questionModel = questionModels.get(holder.getAdapterPosition());
-        QuizModel quizModel = quizModels.get(holder.getAdapterPosition());
+        ExamModel examModel = examModels.get(position);
         holder.txtName.setText(examModel.getTestname());
         holder.txtmarks.setText(String.valueOf(examModel.getMarks()));
         holder.txtdurationinminutes.setText(String.valueOf(examModel.getDurationInMinutes()));
@@ -71,7 +62,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
                 if (mListenerHistory != null) {
                     int position = holder.getAdapterPosition();
                     setPosition(position);
-                    mListenerHistory.onItemClick(examModel.getId(),questionModel.getId(), quizModel.getId(),getPosition());
+                    mListenerHistory.onItemClick(examModel.getId(), getPosition());
                 }
             }
         });
@@ -82,7 +73,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
 
     public interface OnItemClickListener {
-        void onItemClick(String examId,String questionId, String quizId,int position);
+        void onItemClick(String examId, int position);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
@@ -99,7 +90,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
                 public void onClick(View v) {
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
-                        mListenerHistory.onItemClick(examModels.get(position).getId(), questionModels.get(position).getId(),quizModels.get(position).getId(),position);
+                        mListenerHistory.onItemClick(examModels.get(position).getId(),position);
                     }
                 }
             });

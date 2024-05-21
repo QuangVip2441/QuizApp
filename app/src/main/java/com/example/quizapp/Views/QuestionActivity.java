@@ -51,7 +51,7 @@ import java.util.concurrent.TimeUnit;
 
 public class QuestionActivity extends AppCompatActivity{
 
-    private TextView txtTimer, txtnumberquestion;
+    private TextView txtTimer;
     private CountDownTimer countDownTimer;
     private RecyclerView recyclerNumberQuestion;
     private QuestionAdapter questionAdapter;
@@ -79,7 +79,6 @@ public class QuestionActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question);
         txtTimer = findViewById(R.id.txtTimer);
-        txtnumberquestion = findViewById(R.id.txtnumberquestion);
         recyclerNumberQuestion = findViewById(R.id.recyclerNumberQuestion);
 
         dbHelper = new DatabaseHelper(this);

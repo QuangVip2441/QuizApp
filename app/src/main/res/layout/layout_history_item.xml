@@ -35,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:text="Name"
                 android:textAllCaps="true"
-                android:textColor="@color/secondary"
+                android:textColor="@color/Title"
                 android:textSize="18sp"
                 android:layout_marginEnd="10dp"
                 android:layout_weight="1"

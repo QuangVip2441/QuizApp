@@ -213,18 +213,19 @@ public class QuestionFragment extends Fragment {
             }
         });
 
-        progressBar.show();
         loadData(view);
-        progressBar.hide();
+
         return view;
     }
 
 
     private void loadData(View view) {
+        progressBar.show();
         if (mQuestions != null) {
             showQuestion(view);
             String num = String.valueOf(mOrder + 1);
             textQuestionNumberInline.setText(num);
+            progressBar.hide();
         }
     }
 

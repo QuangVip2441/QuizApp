@@ -4,24 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".Views.QuestionFragment"
+    tools:context=".Views.ShowHistoryFragment"
     android:padding="12dp"
-    android:id="@+id/fragmentQuestion"
+    android:id="@+id/fragmentShowHistoryQuestion"
     android:background="@color/colorwhitegray">
 
-
-    <androidx.core.widget.ContentLoadingProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerInParent="true"
-        android:layout_marginStart="120dp"
-        android:layout_marginTop="120dp"
-        android:layout_marginEnd="120dp"
-        app:indicatorColor="@color/colorGreen"
-        android:layout_marginBottom="120dp"
-        android:indeterminate="true" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -34,41 +21,15 @@
             android:layout_weight="3"
             android:layout_marginStart="6dp"
             android:layout_marginEnd="6dp">
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="15dp">
 
-        <TextView
-            android:id="@+id/textId"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Câu "
-            android:textSize="18sp"
-            android:textStyle="bold"/>
-
-        <!-- TextView hiển thị số câu hỏi -->
-        <TextView
-            android:id="@+id/textQuestionNumberInline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="1/10"
-            android:textSize="18sp"
-            android:textStyle="bold"/>
-
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/textContent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:text="Nội dung câu hỏi"
-        android:textSize="20sp"/>
+            <TextView
+                android:id="@+id/textContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:text="Nội dung câu hỏi"
+                android:textSize="20sp"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -89,7 +50,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Quay lại"
+                android:text="Câu trước"
                 android:backgroundTint="@color/colorblue"/>
 
             <View
@@ -102,7 +63,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Lưu"
+                android:text="Câu tiếp"
                 android:backgroundTint="@color/colorblue"/>
         </LinearLayout>
     </LinearLayout>
