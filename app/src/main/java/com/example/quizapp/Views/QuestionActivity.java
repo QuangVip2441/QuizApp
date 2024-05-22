@@ -192,7 +192,7 @@ public class QuestionActivity extends AppCompatActivity{
                                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                         if (task.isSuccessful()) {
                                             mQuestions.clear();
-                                            dbHelper.resetData();
+                                            dbHelper.resetDatabase();
                                             for (QueryDocumentSnapshot document : task.getResult()) {
                                                 Map<String, Object> data = document.getData();
                                                 ArrayList<ChoiceModel> choices = new ArrayList<>();
@@ -225,13 +225,13 @@ public class QuestionActivity extends AppCompatActivity{
                                             recyclerNumberQuestion.setLayoutManager(layoutManager);
                                             recyclerNumberQuestion.setAdapter(questionAdapter);
 
-                                            QuestionFragment questionFragment = new QuestionFragment(Questions, 0, moduleID, examModel);
+                                            QuestionFragment questionFragment = new QuestionFragment(Questions, 0, moduleID, examModel, dbHelper);
                                             FragmentUtils.replaceFragmentQuestion(getSupportFragmentManager(), questionFragment, true);
 
                                             questionAdapter.setOnItemClickListener(new QuestionAdapter.OnItemClickListener() {
                                                 @Override
                                                 public void onItemClick(String questionId, int position) {
-                                                    QuestionFragment questionFragment = new QuestionFragment(Questions, position, moduleID, examModel);
+                                                    QuestionFragment questionFragment = new QuestionFragment(Questions, position, moduleID, examModel, dbHelper);
                                                     FragmentUtils.replaceFragmentQuestion(getSupportFragmentManager(), questionFragment, true);
                                                 }
                                             });

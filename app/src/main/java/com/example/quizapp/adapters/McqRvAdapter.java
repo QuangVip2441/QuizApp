@@ -1,5 +1,7 @@
 package com.example.quizapp.adapters;
 
+import static java.security.AccessController.getContext;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,15 +29,14 @@ public class McqRvAdapter extends RecyclerView.Adapter<McqRvAdapter.ViewHolder> 
     private int selectedChoiceIndex= -1;
     private int mOrder;
     private int response;
-    private ArrayList<Integer> mPositions;
+    private DatabaseHelper dbHelper;
 
 
-
-    public McqRvAdapter(int RESOURCE_ID, ArrayList<ChoiceModel> mChoices, int mOrder, int response) {
+    public McqRvAdapter(int RESOURCE_ID, ArrayList<ChoiceModel> mChoices, int mOrder, DatabaseHelper dbHelper) {
         this.RESOURCE_ID = RESOURCE_ID;
         this.mChoices = mChoices;
         this.mOrder = mOrder;
-        this.response = response;
+        this.dbHelper = dbHelper;
     }
 
 
@@ -53,9 +54,17 @@ public class McqRvAdapter extends RecyclerView.Adapter<McqRvAdapter.ViewHolder> 
         ChoiceModel choice = mChoices.get(holder.getAdapterPosition());
         holder.textAnswer.setText(choice.getAnswer());
 
+        int savedResponse = -1; // Default value indicating no response
+
+        if (dbHelper != null) {
+            Integer responseFromDB = dbHelper.getResponse(mOrder);
+            if (responseFromDB != null) {
+                savedResponse = responseFromDB;
+            }
+        }
 
         // Kiểm tra nếu vị trí hiện tại đã được chọn trước đó
-        if (holder.getAdapterPosition() == response) {
+        if (holder.getAdapterPosition() == savedResponse) {
             holder.radioAnswer.setChecked(true);
         } else {
             holder.radioAnswer.setChecked(false);
@@ -66,6 +75,7 @@ public class McqRvAdapter extends RecyclerView.Adapter<McqRvAdapter.ViewHolder> 
             public void onClick(View view) {
                 response = holder.getAdapterPosition();
                 selectedChoiceIndex = response;
+                dbHelper.saveResponse(mOrder, response);
                 notifyDataSetChanged();
 
 
@@ -77,6 +87,7 @@ public class McqRvAdapter extends RecyclerView.Adapter<McqRvAdapter.ViewHolder> 
             public void onClick(View view) {
                 response = holder.getAdapterPosition();
                 selectedChoiceIndex = response;
+                dbHelper.saveResponse(mOrder, response);
                 notifyDataSetChanged();
             }
         });

@@ -1,55 +1,35 @@
 package com.example.quizapp.ultils;
 
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
+import android.content.SharedPreferences;
 
+import java.security.AccessControlContext;
 
-
-public class DatabaseHelper extends SQLiteOpenHelper {
-
-    private static final String DATABASE_NAME = "QuestionResponses.db";
-    private static final int DATABASE_VERSION = 1;
-
-    public static final String TABLE_RESPONSES = "responses";
-    public static final String COLUMN_ID = "_id";
-    public static final String COLUMN_ORDER = "question_order";
-    public static final String COLUMN_RESPONSE = "response";
-
-    // SQL statement to create the responses table
-    private static final String SQL_CREATE_TABLE_RESPONSES =
-            "CREATE TABLE " + TABLE_RESPONSES + " (" +
-                    COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    COLUMN_ORDER + " INTEGER," +
-                    COLUMN_RESPONSE + " INTEGER)";
+public class DatabaseHelper {
+    private static final String DATABASE_NAME = "MyDatabase";
+    private static final String KEY_PREFIX_ORDER = "order_";
+    private static final String KEY_PREFIX_RESPONSE = "response_";
+    private SharedPreferences sharedPreferences;
 
     public DatabaseHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        sharedPreferences = context.getSharedPreferences(DATABASE_NAME, Context.MODE_PRIVATE);
     }
 
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-        db.execSQL(SQL_CREATE_TABLE_RESPONSES);
+    public void saveResponse(int order, int response) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(KEY_PREFIX_RESPONSE + order, response);
+        editor.apply();
     }
 
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_RESPONSES);
-        onCreate(db);
+    public int getResponse(int order) {
+        return sharedPreferences.getInt(KEY_PREFIX_RESPONSE + order, -1);
     }
-    public void resetData() {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("DELETE FROM " + TABLE_RESPONSES);
-        db.close();
-    }
-    public void updateResponse(int order, int response) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("response", response);
-        String[] whereArgs = { String.valueOf(order) };
-        db.update("YourTableName", values, "mOrder=?", whereArgs);
-        db.close();
+
+    public void resetDatabase() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.apply();
     }
 }
+

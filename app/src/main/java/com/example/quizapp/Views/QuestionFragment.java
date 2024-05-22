@@ -73,6 +73,7 @@ public class QuestionFragment extends Fragment {
     private FirebaseUser user;
     private String userID;
     private DocumentReference mRefDocumentExam;
+    private DatabaseHelper dbHelper;
     private int response;
 
 
@@ -80,18 +81,20 @@ public class QuestionFragment extends Fragment {
         this.quiz = new ArrayList<QuizModel>(); // Initialize the ArrayList
     }
 
-    public QuestionFragment(ArrayList<QuestionModel> mQuestions, int mOrder, ExamModel examModel, ArrayList<QuizModel> quiz, ArrayList<Integer> mPositions) {
+    public QuestionFragment(ArrayList<QuestionModel> mQuestions, int mOrder, ExamModel examModel, ArrayList<QuizModel> quiz, ArrayList<Integer> mPositions, DatabaseHelper dbHelper) {
         this.mQuestions = mQuestions;
         this.mOrder = mOrder;
         this.NewexamModel = examModel;
         this.quiz = quiz;
         this.mPositions = mPositions;
+        this.dbHelper = dbHelper;
     }
 
-    public QuestionFragment(ArrayList<QuestionModel> mQuestions, int mOrder, ExamModel examModel) {
+    public QuestionFragment(ArrayList<QuestionModel> mQuestions, int mOrder, ExamModel examModel, DatabaseHelper dbHelper) {
         this.mQuestions = mQuestions;
         this.mOrder = mOrder;
         this.NewexamModel = examModel;
+        this.dbHelper = dbHelper;
         this.quiz = new ArrayList<QuizModel>(); // Initialize the ArrayList
         this.mPositions = new ArrayList<Integer>();
     }
@@ -104,11 +107,12 @@ public class QuestionFragment extends Fragment {
         this.quiz = quiz;
     }
 
-    public QuestionFragment(ArrayList<QuestionModel> mQuestions, int mOrder, String mSelectedModuleID, ExamModel examModel) {
+    public QuestionFragment(ArrayList<QuestionModel> mQuestions, int mOrder, String mSelectedModuleID, ExamModel examModel, DatabaseHelper dbHelper) {
         this.mQuestions = mQuestions;
         this.mOrder = mOrder;
         this.mSelectedModuleID = mSelectedModuleID;
         this.NewexamModel = examModel;
+        this.dbHelper = dbHelper;
         this.quiz = new ArrayList<QuizModel>(); // Khởi tạo arraylist thay vì trong oncreate
         this.mPositions = new ArrayList<Integer>();
     }
@@ -189,7 +193,7 @@ public class QuestionFragment extends Fragment {
                     });
 
                     if (mOrder < mQuestions.size() - 1) {
-                        QuestionFragment nextFragment = new QuestionFragment(mQuestions, mOrder + 1, NewexamModel, quiz, mPositions);
+                        QuestionFragment nextFragment = new QuestionFragment(mQuestions, mOrder + 1, NewexamModel, quiz, mPositions, dbHelper);
                         FragmentUtils.replaceFragmentQuestion(
                                 getActivity().getSupportFragmentManager(),
                                 nextFragment,
@@ -241,7 +245,7 @@ public class QuestionFragment extends Fragment {
             mcqRVAdapter = new McqRvAdapter(
                     R.layout.layout_item_answer,
                     mQuestions.get(mOrder).getChoices(),
-                    mOrder, response
+                    mOrder, dbHelper
             );
 
             LinearLayoutManager layoutManager = new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false);

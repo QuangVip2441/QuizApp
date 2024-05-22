@@ -111,6 +111,7 @@ public class RandomQuestionActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()){
+                    dbHelper.resetDatabase();
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()){
                         mtestadmin.clear();
@@ -447,13 +448,13 @@ public class RandomQuestionActivity extends AppCompatActivity {
                                                                                                                                             recyclerNumberQuestion.setLayoutManager(layoutManager);
                                                                                                                                             recyclerNumberQuestion.setAdapter(questionAdapter);
 
-                                                                                                                                            QuestionFragment questionFragment = new QuestionFragment(mQuestions, 0, examModel);
+                                                                                                                                            QuestionFragment questionFragment = new QuestionFragment(mQuestions, 0, examModel, dbHelper);
                                                                                                                                             FragmentUtils.replaceFragmentQuestion(getSupportFragmentManager(), questionFragment, true);
 
                                                                                                                                             questionAdapter.setOnItemClickListener(new QuestionAdapter.OnItemClickListener() {
                                                                                                                                                 @Override
                                                                                                                                                 public void onItemClick(String questionId, int position) {
-                                                                                                                                                    QuestionFragment questionFragment = new QuestionFragment(mQuestions, position, examModel);
+                                                                                                                                                    QuestionFragment questionFragment = new QuestionFragment(mQuestions, position, examModel, dbHelper);
                                                                                                                                                     FragmentUtils.replaceFragmentQuestion(getSupportFragmentManager(), questionFragment, true);
                                                                                                                                                 }
                                                                                                                                             });
