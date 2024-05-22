@@ -13,6 +13,7 @@ public class ExamModel {
     private Date endDateTime;//
     private String state;
     private Float marks; //(diem)
+    private ArrayList<QuestionModel> mQuestion;
 
 
     public ExamModel() {
@@ -30,17 +31,9 @@ public class ExamModel {
         this.marks = marks;
     }
 
-    public ExamModel(ArrayList<QuizModel> quizs, String testname, String durationInMinutes, Date startDateTime, Date endDateTime, String state, Float marks) {
-        this.quizs = quizs;
-        this.testname = testname;
-        this.durationInMinutes = durationInMinutes;
-        this.startDateTime = startDateTime;
-        this.endDateTime = endDateTime;
-        this.state = state;
-        this.marks = marks;
-    }
 
-    public ExamModel(String id, String moduleId, ArrayList<QuizModel> quizs, String testname, String durationInMinutes, Date startDateTime, Date endDateTime, String state, Float marks) {
+
+    public ExamModel(String id, String moduleId, ArrayList<QuizModel> quizs, String testname, String durationInMinutes, Date startDateTime, Date endDateTime, String state, Float marks, ArrayList<QuestionModel> mQuestion) {
         this.id = id;
         this.moduleId = moduleId;
         this.quizs = quizs;
@@ -50,6 +43,19 @@ public class ExamModel {
         this.endDateTime = endDateTime;
         this.state = state;
         this.marks = marks;
+        this.mQuestion = mQuestion;
+    }
+
+    public ExamModel(String moduleId, ArrayList<QuizModel> quizs, String testname, String durationInMinutes, Date startDateTime, Date endDateTime, String state, Float marks, ArrayList<QuestionModel> mQuestion) {
+        this.moduleId = moduleId;
+        this.quizs = quizs;
+        this.testname = testname;
+        this.durationInMinutes = durationInMinutes;
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+        this.state = state;
+        this.marks = marks;
+        this.mQuestion = mQuestion;
     }
 
     public String getId() {
@@ -122,5 +128,13 @@ public class ExamModel {
 
     public void setModuleId(String moduleId) {
         this.moduleId = moduleId;
+    }
+
+    public ArrayList<QuestionModel> getmQuestion() {
+        return mQuestion;
+    }
+
+    public void setmQuestion(ArrayList<QuestionModel> mQuestion) {
+        this.mQuestion = mQuestion;
     }
 }

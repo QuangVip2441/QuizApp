@@ -9,6 +9,18 @@
     android:id="@+id/fragmentShowHistoryQuestion"
     android:background="@color/colorwhitegray">
 
+    <androidx.core.widget.ContentLoadingProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="120dp"
+        android:layout_marginTop="120dp"
+        android:layout_marginEnd="120dp"
+        app:indicatorColor="@color/colorGreen"
+        android:layout_marginBottom="120dp"
+        android:indeterminate="true" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -34,38 +46,11 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerChoices"
+            android:id="@+id/recyclerHistoryChoices"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="5"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="horizontal">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonPrevious"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Câu trước"
-                android:backgroundTint="@color/colorblue"/>
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"/>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonNext"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Câu tiếp"
-                android:backgroundTint="@color/colorblue"/>
-        </LinearLayout>
     </LinearLayout>
 
 </RelativeLayout>

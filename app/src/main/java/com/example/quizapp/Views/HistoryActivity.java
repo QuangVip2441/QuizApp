@@ -7,6 +7,7 @@ import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -56,12 +57,14 @@ public class HistoryActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);
 
+
         setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
+        progressBar.show();
         user = FirebaseAuth.getInstance().getCurrentUser();
         userID = user.getUid();
         mQuestions = new ArrayList<>();
@@ -74,7 +77,6 @@ public class HistoryActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     mExams.clear();
-                    progressBar.show();
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         Map<String, Object> data = document.getData();
                         ArrayList<QuizModel> quizModels = new ArrayList<>();
@@ -115,11 +117,12 @@ public class HistoryActivity extends AppCompatActivity {
                     recyclerCategory.setLayoutManager(layoutManager);
                     recyclerCategory.setAdapter(ShowHistoryquestionAdapter);
                     progressBar.hide();
-
                     ShowHistoryquestionAdapter.setOnItemClickListener(new HistoryAdapter.OnItemClickListener() {
                         @Override
                         public void onItemClick(String examId,int position) {
-                            Toast.makeText(HistoryActivity.this, examId, Toast.LENGTH_LONG).show();
+                            Intent intent = new Intent(HistoryActivity.this, ShowHistoryActivity.class);
+                            intent.putExtra("Key",examId);
+                            startActivity(intent);
                         }
                     });
 

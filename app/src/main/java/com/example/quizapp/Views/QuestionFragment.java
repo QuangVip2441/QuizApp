@@ -109,7 +109,7 @@ public class QuestionFragment extends Fragment {
         this.mOrder = mOrder;
         this.mSelectedModuleID = mSelectedModuleID;
         this.NewexamModel = examModel;
-        this.quiz = new ArrayList<QuizModel>(); // Initialize the ArrayList
+        this.quiz = new ArrayList<QuizModel>(); // Khởi tạo arraylist thay vì trong oncreate
         this.mPositions = new ArrayList<Integer>();
     }
 
@@ -233,7 +233,6 @@ public class QuestionFragment extends Fragment {
 
     private void showQuestion(View view) {
         if (mOrder < mQuestions.size()) {
-            QuestionModel question = mQuestions.get(mOrder);
             textContent.setText(mQuestions.get(mOrder).getContent());
 
 
@@ -328,6 +327,7 @@ public class QuestionFragment extends Fragment {
                     map.put(Constant.Database.Exam.STATE, NewexamModel.getState());
                     map.put(Constant.Database.Exam.TEST_NAME, NewexamModel.getTestname());
                     map.put(Constant.Database.Exam.MODULEID, NewexamModel.getModuleId());
+                    map.put(Constant.Database.Exam.LISTQUESTIONS, NewexamModel.getmQuestion());
 
                     mRefDocumentExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ)
                             .document(userID).collection(Constant.Database.Exam.COLLECTION_EXAM)

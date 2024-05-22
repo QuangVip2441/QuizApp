@@ -440,6 +440,7 @@ public class RandomQuestionActivity extends AppCompatActivity {
 
 
                                                                                                                                             Collections.shuffle(mQuestions);
+                                                                                                                                            examModel.setmQuestion(mQuestions);
                                                                                                                                             // add questions
                                                                                                                                             questionAdapter = new QuestionAdapter(R.layout.layout_item_header_number_question, mQuestions);
                                                                                                                                             LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
@@ -596,6 +597,7 @@ public class RandomQuestionActivity extends AppCompatActivity {
                     map.put(Constant.Database.Exam.STATE, examModel.getState());
                     map.put(Constant.Database.Exam.TEST_NAME, examModel.getTestname());
                     map.put(Constant.Database.Exam.MODULEID, examModel.getModuleId());
+                    map.put(Constant.Database.Exam.LISTQUESTIONS, examModel.getmQuestion());
 
                     mRefDocumentExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ)
                             .document(userID).collection(Constant.Database.Exam.COLLECTION_EXAM)

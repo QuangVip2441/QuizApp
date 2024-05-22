@@ -38,4 +38,14 @@ public class FragmentUtils {
         transaction.commit();
     }
 
+    public static void replaceHistoryFragmentQuestion(FragmentManager manager,
+                                               Fragment fragment,
+                                               boolean addToBackStack) {
+        FragmentTransaction transaction = manager.beginTransaction();
+        if (addToBackStack) {
+            transaction.addToBackStack(null);
+        }
+        transaction.replace(R.id.fragmentShowHistoryQuestion, fragment);
+        transaction.commit();
+    }
 }

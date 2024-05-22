@@ -217,7 +217,7 @@ public class QuestionActivity extends AppCompatActivity{
 
                                             }
                                             Questions.addAll(getRandomQuestions(mQuestions,numberOfQuestions));
-
+                                            examModel.setmQuestion(Questions);
 
                                             // add questions
                                             questionAdapter = new QuestionAdapter(R.layout.layout_item_header_number_question, Questions);
@@ -334,6 +334,8 @@ public class QuestionActivity extends AppCompatActivity{
                     map.put(Constant.Database.Exam.STATE, examModel.getState());
                     map.put(Constant.Database.Exam.TEST_NAME, examModel.getTestname());
                     map.put(Constant.Database.Exam.MODULEID, examModel.getModuleId());
+                    map.put(Constant.Database.Exam.LISTQUESTIONS, examModel.getmQuestion());
+
 
                     mRefDocumentExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ)
                             .document(userID).collection(Constant.Database.Exam.COLLECTION_EXAM)

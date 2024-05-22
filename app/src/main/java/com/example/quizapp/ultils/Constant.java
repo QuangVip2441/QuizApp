@@ -29,6 +29,7 @@ public class Constant {
             public static final String DURATION_IN_MINUTES = "durationinminutes";
             public static final String MARKS = "marks";
             public static final String STATE = "state";
+            public static final String LISTQUESTIONS = "listquestions";
         }
 
         public static class Question {

@@ -22,8 +22,6 @@ import java.util.Map;
 
 public class McqRvAdapter extends RecyclerView.Adapter<McqRvAdapter.ViewHolder> {
 
-
-
     private final int RESOURCE_ID;
     private ArrayList<ChoiceModel> mChoices;
     private int selectedChoiceIndex= -1;
