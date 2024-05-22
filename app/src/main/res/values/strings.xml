@@ -1,5 +1,10 @@
 <resources>
-    <string name="app_name">QuizApp</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="app_name">Ôn Thi Lý Thuyết CNTT</string>
+    <string name="title_text">ÔN THI LÝ THUYẾT CHỨNG CHỈ CÔNG NGHỆ THÔNG TIN</string>
+    <string name="introduction_text">Ứng dụng của chúng tôi giúp bạn ôn thi lý thuyết chứng chỉ công nghệ thông tin một cách hiệu quả và dễ dàng. Với kho bài tập phong phú và cập nhật liên tục, bạn sẽ luôn được chuẩn bị tốt nhất cho kỳ thi.</string>
+    <string name="get_started_button">Bắt Đầu Ngay</string>
 </resources>
+

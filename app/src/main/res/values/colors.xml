@@ -21,8 +21,12 @@
     <color name="HistoryTitle">#057591</color>
     <color name="Title">#F44336</color>
 
+    <color name="modulebg1">#fefaf1</color>
+    <color name="modulebg2">#f1ebe5</color>
+
     //radio button color
     <color name="your_answer_color">#FFA500</color> <!-- Màu cho câu trả lời của bạn -->
     <color name="correct_answer_color">#00FF00</color> <!-- Màu cho câu trả lời đúng -->
     <color name="default_answer_color">#FFFFFF</color> <!-- Màu nền mặc định -->
+    <color name="startbutton">#0C7C17</color>
 </resources>

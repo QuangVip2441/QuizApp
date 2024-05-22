@@ -39,8 +39,7 @@
                 android:src="@drawable/ic_main"
                 app:layout_constraintBottom_toBottomOf="@id/imageBanner"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/imageBanner"
-               />
+                app:layout_constraintTop_toTopOf="@id/imageBanner" />
 
             <TextView
                 android:id="@+id/txtNameApp"
@@ -54,8 +53,7 @@
                 android:textColor="@color/black"
                 android:textSize="35sp"
                 android:textAllCaps="true"
-                android:fontFamily="sans-serif-condensed-medium"/>
-
+                android:fontFamily="sans-serif-condensed-medium" />
 
             <LinearLayout
                 android:id="@+id/linearintroduce"
@@ -92,49 +90,16 @@
                         android:layout_height="wrap_content"
                         android:text="Ứng dụng Sát hạch này là một công cụ hữu ích giúp người dùng ôn tập kiến ​​thức, làm bài tập và thi thử các bài kiểm tra về các khái niệm và kỹ năng trong lĩnh vực tin học."
                         android:textSize="17sp"
-                        android:visibility="gone"/>
+                        android:visibility="gone" />
 
                     <ImageButton
                         android:id="@+id/btnToggle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@color/white"
-                        android:src="@drawable/ic_show"
-                        />
+                        android:src="@drawable/ic_show" />
                 </LinearLayout>
             </LinearLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:gravity="center_vertical"
-                android:layout_marginRight="20dp"
-                android:layout_marginLeft="10dp"
-                android:background="@drawable/background_circular"
-                android:layout_marginTop="15dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearintroduce">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Nhập vào mục bạn muốn tìm"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:letterSpacing="0.04"
-                    android:layout_marginLeft="20dp"/>
-                
-                <ImageView
-                    android:id="@+id/imgSearch"
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginRight="20dp"
-                    android:src="@drawable/ic_search"/>
-            </RelativeLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -152,7 +117,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Luyện Tập"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -174,8 +139,7 @@
                         android:layout_width="110dp"
                         android:layout_height="110dp"
                         android:src="@drawable/icon_randomtest"
-                        android:layout_gravity="center_horizontal"
-                        />
+                        android:layout_gravity="center_horizontal" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -183,8 +147,7 @@
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:textColor="@color/black"
-                        android:layout_gravity="center_horizontal"
-                        />
+                        android:layout_gravity="center_horizontal" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -200,8 +163,7 @@
                         android:layout_width="110dp"
                         android:layout_height="110dp"
                         android:src="@drawable/ic_testmodule"
-                        android:layout_gravity="center_horizontal"
-                        />
+                        android:layout_gravity="center_horizontal" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -209,10 +171,8 @@
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:textColor="@color/black"
-                        android:layout_gravity="center_horizontal"
-                        />
+                        android:layout_gravity="center_horizontal" />
                 </LinearLayout>
-
             </LinearLayout>
 
             <TextView
@@ -220,7 +180,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:text="Tùy chọn"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -242,8 +202,7 @@
                         android:layout_width="110dp"
                         android:layout_height="110dp"
                         android:src="@drawable/icon_historytest"
-                        android:layout_gravity="center_horizontal"
-                        />
+                        android:layout_gravity="center_horizontal" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -251,8 +210,7 @@
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:textColor="@color/black"
-                        android:layout_gravity="center_horizontal"
-                        />
+                        android:layout_gravity="center_horizontal" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -264,21 +222,19 @@
                     android:background="@drawable/background_circular"
                     android:backgroundTint="@color/colorwhitegray">
                     <com.google.android.material.imageview.ShapeableImageView
-                        android:id="@+id/imgOther"
+                        android:id="@+id/imgIntroduction"
                         android:layout_width="110dp"
                         android:layout_height="110dp"
-                        android:src="@drawable/icon_otherselect"
-                        android:layout_gravity="center_horizontal"
-                        />
+                        android:src="@drawable/introduction"
+                        android:layout_gravity="center_horizontal" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Tùy Chọn Khác"
+                        android:text="Giới Thiệu"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:textColor="@color/black"
-                        android:layout_gravity="center_horizontal"
-                        />
+                        android:layout_gravity="center_horizontal" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

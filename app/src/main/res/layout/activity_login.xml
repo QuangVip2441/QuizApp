@@ -83,15 +83,5 @@
                 app:cornerRadius = "20dp"/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
-    <TextView
-        android:id="@+id/txt_forgotpassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:text="Quên mật khẩu?"
-        android:textSize="18sp"
-        android:textAlignment="center"
-        android:textColor="@color/purple"
-        android:layout_marginBottom="20dp"/>
 
 </LinearLayout>

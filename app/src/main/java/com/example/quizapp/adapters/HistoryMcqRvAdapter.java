@@ -66,16 +66,13 @@ public class HistoryMcqRvAdapter extends RecyclerView.Adapter<HistoryMcqRvAdapte
 
         holder.radioAnswer.setChecked(false);
 
-        // Đặt trạng thái "checked" nếu lựa chọn là câu trả lời hoặc câu trả lời đúng
         if (choice.getId().equals(quizModels.get(mOrder).getIdanswer()) ||
                 choice.getId().equals(quizModels.get(mOrder).getIdcorrect())) {
             holder.radioAnswer.setChecked(true);
         }
 
-        // Đặt nội dung của câu trả lời
         holder.textAnswer.setText(choice.getAnswer());
 
-        // Đặt màu nền cho đáp án
         if (choice.getId().equals(quizModels.get(mOrder).getIdanswer())) {
             holder.cardViewAnswer.setCardBackgroundColor(holder.itemView.getContext().getResources().getColor(R.color.your_answer_color));
         } else if (choice.getId().equals(quizModels.get(mOrder).getIdcorrect())) {

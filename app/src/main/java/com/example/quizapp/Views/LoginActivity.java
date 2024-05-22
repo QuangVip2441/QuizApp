@@ -26,7 +26,6 @@ import com.google.firebase.auth.FirebaseAuth;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText edt_email, edt_password;
-    private TextView txt_forgotpassword;
     private Button btn_login;
     private FirebaseAuth mAuth;
     @Override
@@ -36,7 +35,6 @@ public class LoginActivity extends AppCompatActivity {
 
         edt_email = findViewById(R.id.edt_email);
         edt_password = findViewById(R.id.edt_password);
-        txt_forgotpassword = findViewById(R.id.txt_forgotpassword);
         btn_login = findViewById(R.id.btn_login);
 
         mAuth = FirebaseAuth.getInstance();

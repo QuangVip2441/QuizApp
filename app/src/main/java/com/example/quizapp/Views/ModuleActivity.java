@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import com.example.quizapp.Models.ModuleModel;
 import com.example.quizapp.R;
@@ -20,7 +21,7 @@ import java.util.List;
 
 public class ModuleActivity extends AppCompatActivity {
 
-    private ShapeableImageView buttonQuizModule;
+    private LinearLayout buttonQuizModule;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

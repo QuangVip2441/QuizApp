@@ -26,7 +26,7 @@ public class HomeFragment extends Fragment {
 
     private TextView hiddenContent, txtNameApp;
     private ImageButton btnToggle;
-    private ShapeableImageView imgTestModule, imageAvatar, imgTestRandom, imgHistoryTest;
+    private ShapeableImageView imgTestModule, imageAvatar, imgTestRandom, imgHistoryTest, imgIntroduction;
     private FirebaseUser user;
     private String userID = "";
     @Override
@@ -41,6 +41,7 @@ public class HomeFragment extends Fragment {
         imageAvatar = view.findViewById(R.id.imageAvatar);
         imgTestRandom = view.findViewById(R.id.imgTestRandom);
         imgHistoryTest = view.findViewById(R.id.imgHistoryTest);
+        imgIntroduction = view.findViewById(R.id.imgIntroduction);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         userID = user.getUid();
@@ -56,6 +57,15 @@ public class HomeFragment extends Fragment {
                         .into(imageAvatar);
             }
         });
+
+        imgIntroduction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), IntroductionActivity.class);
+                startActivity(intent);
+            }
+        });
+
         imgHistoryTest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
