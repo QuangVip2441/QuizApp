@@ -29,7 +29,7 @@ public class IntroductionActivity extends AppCompatActivity {
         getStartedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(IntroductionActivity.this, ModuleActivity.class);
+                Intent intent = new Intent(IntroductionActivity.this, RandomQuestionActivity.class);
                 startActivity(intent);
             }
         });
