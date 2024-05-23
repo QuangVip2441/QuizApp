@@ -13,12 +13,6 @@
         android:theme="@style/Theme.QuizApp"
         tools:targetApi="31">
         <activity
-            android:name=".Views.IntroductionActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Views.ShowHistoryActivity"
-            android:exported="false" />
-        <activity
             android:name=".Views.StartSumTestActivity"
             android:exported="false" />
         <activity
@@ -48,6 +42,20 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
+        </activity>
+        <activity
+            android:name=".Views.IntroductionActivity"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity
+            android:name=".Views.ShowHistoryActivity"
+            android:parentActivityName=".Views.HistoryActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Views.HistoryActivity" />
         </activity>
         <activity
             android:name=".Views.HistoryActivity"

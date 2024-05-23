@@ -69,6 +69,8 @@ public class HistoryMcqRvAdapter extends RecyclerView.Adapter<HistoryMcqRvAdapte
         if (choice.getId().equals(quizModels.get(mOrder).getIdanswer()) ||
                 choice.getId().equals(quizModels.get(mOrder).getIdcorrect())) {
             holder.radioAnswer.setChecked(true);
+        }else {
+            holder.radioAnswer.setChecked(false);
         }
 
         holder.textAnswer.setText(choice.getAnswer());

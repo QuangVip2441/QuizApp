@@ -26,6 +26,7 @@ import com.example.quizapp.adapters.QuestionAdapter;
 import com.example.quizapp.ultils.Constant;
 import com.example.quizapp.ultils.DatabaseHelper;
 import com.example.quizapp.ultils.FragmentUtils;
+import com.example.quizapp.ultils.QuizDatabaseHelper;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -64,11 +65,13 @@ public class QuestionActivity extends AppCompatActivity{
     private int numberOfQuestions = 0;
     private int timeAllowedInSeconds = 0;
     private ArrayList<QuestionModel> mQuestions;
+    private ArrayList<QuizModel> quiz;
     private ArrayList<QuestionModel> Questions;
     private String moduleID;
     private String userID;
     private FirebaseFirestore mFirestore;
     private DatabaseHelper dbHelper;
+    private QuizDatabaseHelper quizDbHelper;
     private CollectionReference mRefCollectionQuestions, mRefCollectionExam;
     private DocumentReference mRefDocumentExam, mRefDocumentModule, mRefDocumentTestAdmin;
 
@@ -82,6 +85,7 @@ public class QuestionActivity extends AppCompatActivity{
         recyclerNumberQuestion = findViewById(R.id.recyclerNumberQuestion);
 
         dbHelper = new DatabaseHelper(this);
+        quizDbHelper = new QuizDatabaseHelper(this);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         userID = user.getUid();
@@ -92,6 +96,7 @@ public class QuestionActivity extends AppCompatActivity{
 
         mQuestions = new ArrayList<>();
         Questions = new ArrayList<>();
+        quiz = new ArrayList<>();
 
 
         mFirestore = FirebaseFirestore.getInstance();
@@ -193,6 +198,7 @@ public class QuestionActivity extends AppCompatActivity{
                                         if (task.isSuccessful()) {
                                             mQuestions.clear();
                                             dbHelper.resetDatabase();
+                                            quizDbHelper.resetDatabase();
                                             for (QueryDocumentSnapshot document : task.getResult()) {
                                                 Map<String, Object> data = document.getData();
                                                 ArrayList<ChoiceModel> choices = new ArrayList<>();
@@ -225,13 +231,14 @@ public class QuestionActivity extends AppCompatActivity{
                                             recyclerNumberQuestion.setLayoutManager(layoutManager);
                                             recyclerNumberQuestion.setAdapter(questionAdapter);
 
-                                            QuestionFragment questionFragment = new QuestionFragment(Questions, 0, moduleID, examModel, dbHelper);
+                                            QuestionFragment questionFragment = new QuestionFragment(Questions, 0, moduleID, examModel, dbHelper, quiz, quizDbHelper);
                                             FragmentUtils.replaceFragmentQuestion(getSupportFragmentManager(), questionFragment, true);
 
                                             questionAdapter.setOnItemClickListener(new QuestionAdapter.OnItemClickListener() {
                                                 @Override
                                                 public void onItemClick(String questionId, int position) {
-                                                    QuestionFragment questionFragment = new QuestionFragment(Questions, position, moduleID, examModel, dbHelper);
+                                                    examModel.setState("Đang làm bài");
+                                                    QuestionFragment questionFragment = new QuestionFragment(Questions, position, moduleID, examModel, dbHelper, quiz, quizDbHelper);
                                                     FragmentUtils.replaceFragmentQuestion(getSupportFragmentManager(), questionFragment, true);
                                                 }
                                             });

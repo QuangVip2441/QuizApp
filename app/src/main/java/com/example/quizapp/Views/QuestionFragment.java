@@ -28,6 +28,7 @@ import com.example.quizapp.adapters.McqRvAdapter;
 import com.example.quizapp.ultils.Constant;
 import com.example.quizapp.ultils.DatabaseHelper;
 import com.example.quizapp.ultils.FragmentUtils;
+import com.example.quizapp.ultils.QuizDatabaseHelper;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -74,28 +75,29 @@ public class QuestionFragment extends Fragment {
     private String userID;
     private DocumentReference mRefDocumentExam;
     private DatabaseHelper dbHelper;
-    private int response;
+    private QuizDatabaseHelper quizDbHelper;
+
 
 
     public QuestionFragment() {
         this.quiz = new ArrayList<QuizModel>(); // Initialize the ArrayList
     }
 
-    public QuestionFragment(ArrayList<QuestionModel> mQuestions, int mOrder, ExamModel examModel, ArrayList<QuizModel> quiz, ArrayList<Integer> mPositions, DatabaseHelper dbHelper) {
+    public QuestionFragment(ArrayList<QuestionModel> mQuestions, int mOrder, ExamModel examModel, ArrayList<QuizModel> quiz, DatabaseHelper dbHelper) {
         this.mQuestions = mQuestions;
         this.mOrder = mOrder;
         this.NewexamModel = examModel;
         this.quiz = quiz;
-        this.mPositions = mPositions;
         this.dbHelper = dbHelper;
     }
 
-    public QuestionFragment(ArrayList<QuestionModel> mQuestions, int mOrder, ExamModel examModel, DatabaseHelper dbHelper) {
+    public QuestionFragment(ArrayList<QuestionModel> mQuestions, int mOrder, ExamModel examModel, ArrayList<QuizModel> quiz,DatabaseHelper dbHelper, QuizDatabaseHelper quizDbHelper) {
         this.mQuestions = mQuestions;
         this.mOrder = mOrder;
         this.NewexamModel = examModel;
         this.dbHelper = dbHelper;
         this.quiz = new ArrayList<QuizModel>(); // Initialize the ArrayList
+        this.quizDbHelper = quizDbHelper;
         this.mPositions = new ArrayList<Integer>();
     }
 
@@ -107,13 +109,14 @@ public class QuestionFragment extends Fragment {
         this.quiz = quiz;
     }
 
-    public QuestionFragment(ArrayList<QuestionModel> mQuestions, int mOrder, String mSelectedModuleID, ExamModel examModel, DatabaseHelper dbHelper) {
+    public QuestionFragment(ArrayList<QuestionModel> mQuestions, int mOrder, String mSelectedModuleID, ExamModel examModel, DatabaseHelper dbHelper, ArrayList<QuizModel> quiz, QuizDatabaseHelper quizDbHelper) {
         this.mQuestions = mQuestions;
         this.mOrder = mOrder;
         this.mSelectedModuleID = mSelectedModuleID;
         this.NewexamModel = examModel;
         this.dbHelper = dbHelper;
-        this.quiz = new ArrayList<QuizModel>(); // Khởi tạo arraylist thay vì trong oncreate
+        this.quiz = quiz; // Khởi tạo arraylist thay vì trong oncreate
+        this.quizDbHelper = quizDbHelper;
         this.mPositions = new ArrayList<Integer>();
     }
 
@@ -155,65 +158,26 @@ public class QuestionFragment extends Fragment {
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int selectedPosition = mcqRVAdapter.getSelectedChoiceIndex();
-                if (selectedPosition < 0){
-                    Toast.makeText(requireContext(),"Answer is not Checked",Toast.LENGTH_SHORT).show();
-                }else {
-                    QuestionModel currentQuestion = mQuestions.get(mOrder);
-                    ChoiceModel selectedChoice = currentQuestion.getChoices().get(selectedPosition);
-                    String selectId = selectedChoice.getId();
-                    String current = currentQuestion.getCorrect();
-
-
-                    if (mQuestions != null && mOrder >= 0 && mOrder < mQuestions.size()) {
-                        if (selectId.equals(current)) {
-                            quiz.add(new QuizModel(mQuestions.get(mOrder).getId(), mQuestions.get(mOrder).getContent(), selectId, current, true));
-                            NewexamModel.setQuizs(quiz);
-                        } else {
-                            quiz.add(new QuizModel(mQuestions.get(mOrder).getId(), mQuestions.get(mOrder).getContent(), selectId, current, false));
-                            NewexamModel.setQuizs(quiz);
-                        }
-                        NewexamModel.setState("Đang làm bài");
-                    }
-
-                    mPositions.set(mOrder, selectedPosition);
-
-                    HashMap<String, Object> map = new HashMap<>();
-                    map.put(Constant.Database.Exam.QUESTION, NewexamModel.getQuizs());
-                    map.put(Constant.Database.Exam.STATE, NewexamModel.getState());
-
-                    mRefDocumentExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ)
-                            .document(userID).collection(Constant.Database.Exam.COLLECTION_EXAM)
-                            .document(NewexamModel.getId());
-                    mRefDocumentExam.update(map).addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void unused) {
-                            Log.d(TAG, "Inserted");
-                        }
-                    });
-
-                    if (mOrder < mQuestions.size() - 1) {
-                        QuestionFragment nextFragment = new QuestionFragment(mQuestions, mOrder + 1, NewexamModel, quiz, mPositions, dbHelper);
-                        FragmentUtils.replaceFragmentQuestion(
-                                getActivity().getSupportFragmentManager(),
-                                nextFragment,
-                                true);
-                    }else {
-                        finishQuiz();
-                    }
+                saveCurrentQuestion();
+                if (mOrder < mQuestions.size() - 1) {
+                    mOrder++;
+                    loadData(view);
+                } else {
+                    finishQuiz();
                 }
             }
         });
 
-
-
         buttonPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                saveCurrentQuestion();
                 if (mOrder >= 1) {
-                    getActivity().getSupportFragmentManager().popBackStack();
-                }else
-                    Toast.makeText(getActivity(),"Không có câu hỏi trước đó",Toast.LENGTH_LONG).show();
+                    mOrder--;
+                    loadData(view);
+                } else {
+                    Toast.makeText(getActivity(), "Không có câu hỏi trước đó", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
@@ -222,6 +186,28 @@ public class QuestionFragment extends Fragment {
         return view;
     }
 
+
+    public void saveCurrentQuestion() {
+        int selectedPosition = mcqRVAdapter.getSelectedChoiceIndex();
+        if (selectedPosition >= 0) {
+//            QuestionModel currentQuestion = mQuestions.get(mOrder);
+//            ChoiceModel selectedChoice = currentQuestion.getChoices().get(selectedPosition);
+//            String selectId = selectedChoice.getId();
+//            String current = currentQuestion.getCorrect();
+//
+//            if (mQuestions != null && mOrder >= 0 && mOrder < mQuestions.size()) {
+//                if (selectId.equals(current)) {
+//                    quiz.add(new QuizModel(mQuestions.get(mOrder).getId(), mQuestions.get(mOrder).getContent(), selectId, current, true));
+//                    NewexamModel.setQuizs(quiz);
+//                } else {
+//                    quiz.add(new QuizModel(mQuestions.get(mOrder).getId(), mQuestions.get(mOrder).getContent(), selectId, current, false));
+//                    NewexamModel.setQuizs(quiz);
+//                }
+                NewexamModel.setState("Đang làm bài");
+
+
+        }
+    }
 
     private void loadData(View view) {
         progressBar.show();
@@ -233,29 +219,54 @@ public class QuestionFragment extends Fragment {
         }
     }
 
-
-
     private void showQuestion(View view) {
         if (mOrder < mQuestions.size()) {
             textContent.setText(mQuestions.get(mOrder).getContent());
-
-
-            response = mPositions.get(mOrder);
-
             mcqRVAdapter = new McqRvAdapter(
                     R.layout.layout_item_answer,
                     mQuestions.get(mOrder).getChoices(),
-                    mOrder, dbHelper
+                    mOrder,dbHelper, mQuestions, quizDbHelper
             );
 
             LinearLayoutManager layoutManager = new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false);
             recyclerChoices.setLayoutManager(layoutManager);
             recyclerChoices.setAdapter(mcqRVAdapter);
-
         }
     }
 
     public void finishQuiz() {
+        ArrayList<QuizModel> quizf = new ArrayList<>();
+
+        ArrayList<QuizModel> quizList = quizDbHelper.getAllQuizzes();
+        if (quizList != null && !quizList.isEmpty()) {
+            for (QuizModel q : quizList) {
+                String questionId = q.getId();
+                String questionContent = q.getQuestioncontent();
+                String answerId = q.getIdanswer();
+                String correctAnswerId = q.getIdcorrect();
+                boolean isCorrect = q.isState();
+                QuizModel newQuiz = new QuizModel(questionId, questionContent, answerId, correctAnswerId, isCorrect);
+
+                quizf.add(newQuiz);
+            }
+
+        }
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put(Constant.Database.Exam.QUESTION, quizf);
+
+
+        mRefDocumentExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ)
+                .document(userID).collection(Constant.Database.Exam.COLLECTION_EXAM)
+                .document(NewexamModel.getId());
+        mRefDocumentExam.update(map).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Log.d(TAG, "Inserted");
+            }
+        });
+
+
         mRefDocumentExam = mFirestore.collection(Constant.Database.Quiz.COLLECTION_QUIZ)
                 .document(userID).collection(Constant.Database.Exam.COLLECTION_EXAM)
                 .document(NewexamModel.getId());

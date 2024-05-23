@@ -33,7 +33,6 @@ public class AddTestAdministrationActivity extends AppCompatActivity {
         addTestAdmin("RIcs3Vkbw67snMZDrQph","IU04", 10, 30, 50);
         addTestAdmin("kVXcvqNDESn0XcGFZOwJ","IU05", 5, 30, 50);
         addTestAdmin("yPcUWum0mjuL7mld9Yhy","IU06", 5, 30, 50);
-        //addTestAdmin("","Sum Test", 50, 30);
         addTestAdmin("ZayqBjRnPr1GXBoyPdOh","SumTest",50,30, 50);
 
 

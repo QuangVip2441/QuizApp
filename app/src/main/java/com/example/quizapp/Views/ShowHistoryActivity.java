@@ -2,6 +2,7 @@ package com.example.quizapp.Views;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -57,6 +58,12 @@ public class ShowHistoryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_show_history);
         recyclerShowHistoryNumberQuestion = findViewById(R.id.recyclerShowHistoryNumberQuestion);
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         user = FirebaseAuth.getInstance().getCurrentUser();
         userID = user.getUid();
         examModel = new ExamModel();
